@@ -54,6 +54,33 @@ export const OBSTACLES = [
   { id: "hump", label: "Mild floor hump", note: "Eases over gentle humps; stops if too steep.", status: "fail-safe" },
 ] as const;
 
+export const KERALA_DISTRICTS = [
+  "Ernakulam (Kochi)",
+  "Kozhikode (Calicut)",
+  "Thrissur",
+  "Malappuram",
+  "Thiruvananthapuram",
+  "Kottayam",
+  "Kannur",
+  "Palakkad",
+  "Kollam",
+  "Alappuzha",
+  "Pathanamthitta",
+  "Kasaragod",
+  "Wayanad",
+  "Idukki",
+] as const;
+
+export const PILOT_CONFIG = {
+  batchNumber: 1,
+  totalUnits: 50,
+  reservedUnits: 38,
+  depositAmount: "Zero upfront payment",
+  deliveryWindow: "Q2 Pilot Batch",
+  trialDays: 30,
+  tagline: "Limited to 50 Kerala families. Reserve your presence today.",
+} as const;
+
 export const BANNED_COPY = [
   "monitor your parents",
   "secure webrtc",
@@ -62,3 +89,12 @@ export const BANNED_COPY = [
   "medical emergency",
   "climb stairs",
 ];
+
+export const TALLY_CONFIG = {
+  // Set your Tally form ID here or via NEXT_PUBLIC_TALLY_FORM_ID in .env.local
+  formId: process.env.NEXT_PUBLIC_TALLY_FORM_ID || "VLeqQa",
+  modalWidth: 650,
+  emoji: "👋",
+} as const;
+
+

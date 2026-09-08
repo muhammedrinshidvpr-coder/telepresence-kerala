@@ -4,6 +4,7 @@ import { test, expect } from "@playwright/test";
 
 test("robot views switch camera (label + canvas alive)", async ({ page }) => {
   await page.goto("/#robot");
+  await expect(page.getByTestId("robot")).toBeVisible();
   await page.getByTestId("view-side").click();
   await expect(page.getByTestId("robot-view-label")).toContainText("side");
   await page.getByTestId("view-rear").click();

@@ -43,11 +43,21 @@ const CASES = [
 
 export default function UseCases() {
   return (
-    <section id="stories" data-testid="usecases" aria-labelledby="usecases-h" className="bg-cream py-14">
+    <section id="stories" data-testid="usecases" aria-labelledby="usecases-h" className="bg-gradient-to-b from-cream to-[#f7f0e4] py-16 md:py-20">
       <div className="max-w-6xl mx-auto px-4">
-        <p className="text-sm font-semibold uppercase tracking-widest text-kerala">Everyday moments</p>
-        <h2 id="usecases-h" className="mt-2 text-3xl md:text-4xl font-bold">Made for real family life</h2>
-        <div className="mt-8 space-y-5">
+        <div className="text-center max-w-2xl mx-auto">
+          <p className="text-xs font-bold uppercase tracking-widest text-kerala bg-kerala-light inline-block px-3.5 py-1.5 rounded-full">
+            Everyday Moments
+          </p>
+          <h2 id="usecases-h" className="mt-3 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+            Designed for real Kerala family life
+          </h2>
+          <p className="mt-3 text-base md:text-lg text-navy/85 text-balance">
+            From early morning chai to spontaneous evening check-ins across oceans.
+          </p>
+        </div>
+
+        <div className="mt-10 space-y-5">
           {CASES.map((c, i) => (
             <motion.article
               key={c.id}
@@ -56,15 +66,17 @@ export default function UseCases() {
               whileInView={{ y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: Math.min(i * 0.05, 0.2) }}
-              className="card-warm p-6 grid gap-3 md:grid-cols-[auto_1fr] md:items-center"
+              className="card-warm card-warm-hover p-6 md:p-7 border border-navy/10 shadow-md grid gap-5 md:grid-cols-[auto_1fr] md:items-center"
             >
-              <span className="w-12 h-12 rounded-2xl bg-kerala-light text-kerala grid place-items-center" aria-hidden>
-                <c.icon size={24} />
+              <span className="w-14 h-14 rounded-2xl bg-kerala-light text-kerala grid place-items-center shrink-0 shadow-inner" aria-hidden>
+                <c.icon size={26} />
               </span>
               <div>
-                <h3 className="text-xl font-bold">{c.title}</h3>
-                <p className="mt-1 text-navy/70">{c.body}</p>
-                <p className="mt-2 font-semibold text-coral-deep">{c.msg}</p>
+                <h3 className="text-xl md:text-2xl font-bold text-navy">{c.title}</h3>
+                <p className="mt-1.5 text-sm md:text-base text-navy/85 leading-relaxed">{c.body}</p>
+                <div className="mt-3 inline-block bg-coral/10 text-coral-deep font-semibold text-xs md:text-sm px-3.5 py-1 rounded-full border border-coral/20">
+                  {c.msg}
+                </div>
               </div>
             </motion.article>
           ))}

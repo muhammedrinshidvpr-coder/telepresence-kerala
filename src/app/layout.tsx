@@ -3,6 +3,7 @@ import { Geist, Noto_Sans_Malayalam } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,10 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <Script
+          src="https://tally.so/widgets/embed.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
