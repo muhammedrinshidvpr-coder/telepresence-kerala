@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { ROBOT_HOTSPOTS } from "@/lib/copy";
-import type { RobotMode, RobotView } from "./RobotCanvas";
+import { RobotErrorBoundary, type RobotMode, type RobotView } from "./RobotCanvas";
 
 const RobotCanvas = dynamic(() => import("./RobotCanvas"), {
   ssr: false,
@@ -12,9 +12,10 @@ const RobotCanvas = dynamic(() => import("./RobotCanvas"), {
 
 function useInView<T extends HTMLElement>(rootMargin = "300px") {
   const ref = useRef<T | null>(null);
-  const [inView, setInView] = useState(
-    () => typeof IntersectionObserver === "undefined"
-  );
+  // Always start false so SSR HTML and first client render match.
+  // (Reading IntersectionObserver support here would differ per
+  // environment and cause a hydration remount.)
+  const [inView, setInView] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
@@ -37,6 +38,13 @@ export default function RobotReveal() {
   const [view, setView] = useState<RobotView>("front");
   const [hotspot, setHotspot] = useState<string>("camera");
   const [webglOk, setWebglOk] = useState(true);
+  // Test hook (?nogl=1): apply after hydration so SSR and first client
+  // render match (avoids a hydration remount).
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has("nogl")) return;
+    const t = window.setTimeout(() => setWebglOk(false), 0);
+    return () => window.clearTimeout(t);
+  }, []);
   const { ref: wrapRef, inView } = useInView<HTMLDivElement>();
   const active = ROBOT_HOTSPOTS.find((h) => h.id === hotspot);
 
@@ -69,7 +77,9 @@ export default function RobotReveal() {
               <div ref={wrapRef} className="h-[300px] sm:h-[380px] bg-gradient-to-b from-cream to-cream-dark" data-testid="robot-canvas-wrap">
                 {inView ? (
                   <Suspense fallback={<p className="p-6">Loading 3D robot…</p>}>
-                    <RobotCanvas mode={mode} view={view} onNoWebGL={() => setWebglOk(false)} />
+                    <RobotErrorBoundary onError={() => setWebglOk(false)}>
+                      <RobotCanvas mode={mode} view={view} onNoWebGL={() => setWebglOk(false)} />
+                    </RobotErrorBoundary>
                   </Suspense>
                 ) : (
                   <div className="h-full grid place-items-center p-8 text-center" data-testid="robot-poster">

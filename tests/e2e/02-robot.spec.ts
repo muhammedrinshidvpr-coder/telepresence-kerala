@@ -4,9 +4,15 @@ test("robot: modes, views, hotspots", async ({ page }) => {
   await page.goto("/#robot");
   await expect(page.getByTestId("robot")).toBeVisible();
   // Let the lazy WebGL canvas mount + warm up (software rendering is slow).
-  await page.getByTestId("robot-canvas-wrap").scrollIntoViewIfNeeded();
-  await expect(page.getByTestId("robot-canvas")).toBeVisible({ timeout: 30000 });
-  await page.waitForTimeout(4000);
+  // If this browser has no WebGL, the static fallback renders instead.
+  const wrap = page.getByTestId("robot-canvas-wrap");
+  await wrap.scrollIntoViewIfNeeded().catch(() => {});
+  if (await wrap.count()) {
+    await expect(page.getByTestId("robot-canvas")).toBeVisible({ timeout: 30000 });
+    await page.waitForTimeout(4000);
+  } else {
+    await expect(page.getByTestId("robot-fallback")).toBeVisible();
+  }
   await page.getByTestId("mode-night").click();
   await expect(page.getByTestId("robot-mode-label")).toContainText("night");
   await page.getByTestId("mode-charging").click();

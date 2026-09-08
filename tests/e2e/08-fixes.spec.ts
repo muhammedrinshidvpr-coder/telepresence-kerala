@@ -8,7 +8,17 @@ test("robot views switch camera (label + canvas alive)", async ({ page }) => {
   await expect(page.getByTestId("robot-view-label")).toContainText("side");
   await page.getByTestId("view-rear").click();
   await expect(page.getByTestId("robot-view-label")).toContainText("rear");
-  await expect(page.getByTestId("robot-canvas-wrap")).toBeVisible();
+  await expect(page.getByTestId("robot-viewer")).toBeVisible();
+});
+
+test("no-WebGL fallback renders and controls still work (?nogl=1)", async ({ page }) => {
+  await page.goto("/?nogl=1#robot");
+  await page.getByTestId("robot-viewer").scrollIntoViewIfNeeded();
+  await expect(page.getByTestId("robot-fallback")).toBeVisible({ timeout: 30000 });
+  await page.getByTestId("mode-night").click();
+  await expect(page.getByTestId("robot-mode-label")).toContainText("night");
+  await page.getByTestId("hotspot-battery").click();
+  await expect(page.getByTestId("hotspot-detail")).toContainText(/charging/i);
 });
 
 test("dock during waking cancels timers (no resurrection)", async ({ page }) => {

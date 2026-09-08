@@ -1,12 +1,30 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Component, useEffect, useRef, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
 export type RobotMode = "day" | "night" | "charging";
 export type RobotView = "front" | "side" | "rear";
+
+/** Catches WebGL failures (disabled GPU, headless shell) so the page
+ *  degrades to the static fallback instead of unmounting entirely. */
+export class RobotErrorBoundary extends Component<
+  { onError: () => void; children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onError();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 export const CAM_POS: Record<RobotView, [number, number, number]> = {
   front: [0, 2, 5.2],
