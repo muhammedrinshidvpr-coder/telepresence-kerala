@@ -34,10 +34,10 @@ export function FinalCTA() {
         <p className="mt-3 text-lg text-cream/75">{COPY.finalSub}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <a href="#demo" data-testid="cta-demo" className="btn-coral">Book a family demo</a>
-          <a href="#demo" data-testid="cta-pilot" className="btn-outline !border-cream !text-cream">Join the Kerala pilot</a>
-          <a href="#top" data-testid="cta-notify" className="btn-outline !border-cream !text-cream">Get notified when available</a>
+          <a href="#demo" data-testid="cta-pilot" className="btn-outline border-cream! text-cream">Join the Kerala pilot</a>
+          <a href="#top" data-testid="cta-notify" className="btn-outline border-cream! text-cream">Get notified when available</a>
         </div>
-        <p className="mt-6 text-sm text-cream/60">Three things to remember: parent may be hard to reach • you can enter virtually • simple, respectful, private.</p>
+        <p className="mt-6 text-sm text-cream/75">Three things to remember: parent may be hard to reach • you can enter virtually • simple, respectful, private.</p>
       </div>
     </section>
   );

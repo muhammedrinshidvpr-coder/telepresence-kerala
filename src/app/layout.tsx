@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Noto_Sans_Malayalam } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -14,6 +14,12 @@ const malayalam = Noto_Sans_Malayalam({
   subsets: ["malayalam", "latin"],
   weight: ["400", "500", "600", "700"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#14243e",
+};
 
 export const metadata: Metadata = {
   title: "Be There, From Anywhere — Telepresence Robot for Kerala Families",

@@ -52,8 +52,8 @@ export default function UseCases() {
             <motion.article
               key={c.id}
               data-testid={`usecase-${c.id}`}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ y: 16 }}
+              whileInView={{ y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: Math.min(i * 0.05, 0.2) }}
               className="card-warm p-6 grid gap-3 md:grid-cols-[auto_1fr] md:items-center"
@@ -64,7 +64,7 @@ export default function UseCases() {
               <div>
                 <h3 className="text-xl font-bold">{c.title}</h3>
                 <p className="mt-1 text-navy/70">{c.body}</p>
-                <p className="mt-2 font-semibold text-coral">{c.msg}</p>
+                <p className="mt-2 font-semibold text-coral-deep">{c.msg}</p>
               </div>
             </motion.article>
           ))}

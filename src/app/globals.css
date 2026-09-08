@@ -8,8 +8,9 @@
   --color-kerala: #1b7a4d;
   --color-kerala-light: #e3f2e9;
   --color-warm: #ffc75f;
-  --color-coral: #ff6b4a;
-  --color-coral-dark: #e04e2d;
+  --color-coral: #c93f20;
+  --color-coral-dark: #a02e14;
+  --color-coral-deep: #a83415;
   --font-sans: var(--font-geist-sans), var(--font-malayalam), ui-sans-serif, system-ui, sans-serif;
 }
 

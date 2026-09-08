@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { MapPin, BellRing } from "lucide-react";
 import { COPY, GCC_CITIES } from "@/lib/copy";
+import { useCity } from "./CityContext";
 
 export default function DistanceJourney() {
-  const [cityId, setCityId] = useState<string>("dubai");
+  const { city, setCityId } = useCity();
   const [distance, setDistance] = useState(60);
-  const city = useMemo(() => GCC_CITIES.find((c) => c.id === cityId) ?? GCC_CITIES[0], [cityId]);
+  const activeId = city.id;
   const weakness = Math.round(distance); // 0..100
   const opacity = (100 - weakness) / 100;
 
@@ -22,18 +23,18 @@ export default function DistanceJourney() {
 
         <div className="mt-8 grid gap-6 md:grid-cols-[1fr_1.2fr]">
           <div className="card-warm p-5">
-            <label htmlFor="city" className="font-semibold flex items-center gap-2">
+            <p className="font-semibold flex items-center gap-2" id="city-group-label">
               <MapPin size={18} aria-hidden /> Choose your location
-            </label>
-            <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="GCC cities">
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="city-group-label">
               {GCC_CITIES.map((c) => (
                 <button
                   key={c.id}
                   data-testid={`city-${c.id}`}
                   onClick={() => setCityId(c.id)}
-                  aria-pressed={cityId === c.id}
+                  aria-pressed={activeId === c.id}
                   className={`px-4 py-2 rounded-full text-sm font-semibold border min-h-11 ${
-                    cityId === c.id ? "bg-navy text-cream border-navy" : "border-navy/20 hover:border-navy"
+                    activeId === c.id ? "bg-navy text-cream border-navy" : "border-navy/20 hover:border-navy"
                   }`}
                 >
                   {c.label}
@@ -55,7 +56,7 @@ export default function DistanceJourney() {
               max={100}
               value={distance}
               onChange={(e) => setDistance(Number(e.target.value))}
-              className="w-full mt-3 accent-[#ff6b4a]"
+              className="w-full mt-3 accent-[#c93f20]"
               aria-valuetext={`${weakness}% distant`}
             />
             <ul className="mt-4 text-sm text-navy/70 space-y-1">
@@ -81,7 +82,7 @@ export default function DistanceJourney() {
               </g>
               <text x="365" y="185" textAnchor="middle" fontSize="12" fill="#14243e">Kerala home</text>
               <g data-testid="connection-line">
-                <line x1="82" y1="110" x2="330" y2="130" stroke="#ff6b4a" strokeWidth={4} strokeOpacity={0.25 + opacity * 0.75} />
+                <line x1="82" y1="110" x2="330" y2="130" stroke="#c93f20" strokeWidth={4} strokeOpacity={0.25 + opacity * 0.75} />
               </g>
             </svg>
             <p className="text-sm text-navy/70" data-testid="connection-strength">

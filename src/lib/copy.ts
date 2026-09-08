@@ -14,13 +14,13 @@ export const COPY = {
 } as const;
 
 export const GCC_CITIES = [
-  { id: "dubai", label: "Dubai", km: 2900 },
-  { id: "abudhabi", label: "Abu Dhabi", km: 2980 },
-  { id: "doha", label: "Doha", km: 3100 },
-  { id: "riyadh", label: "Riyadh", km: 3500 },
-  { id: "kuwait", label: "Kuwait", km: 3600 },
-  { id: "muscat", label: "Muscat", km: 2200 },
-  { id: "manama", label: "Manama", km: 3300 },
+  { id: "dubai", label: "Dubai", km: 2900, ml: "ദുബായിൽ" },
+  { id: "abudhabi", label: "Abu Dhabi", km: 2980, ml: "അബുദാബിയിൽ" },
+  { id: "doha", label: "Doha", km: 3100, ml: "ദോഹയിൽ" },
+  { id: "riyadh", label: "Riyadh", km: 3500, ml: "റിയാദിൽ" },
+  { id: "kuwait", label: "Kuwait", km: 3600, ml: "കുവൈത്തിൽ" },
+  { id: "muscat", label: "Muscat", km: 2200, ml: "മസ്കറ്റിൽ" },
+  { id: "manama", label: "Manama", km: 3300, ml: "മനാമയിൽ" },
 ] as const;
 
 export const MALAYALAM_PHRASES = [

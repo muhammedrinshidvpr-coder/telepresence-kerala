@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { BANNED_COPY } from "../../src/lib/copy";
 
 test("smoke: nav, hero, all 11 blocks render", async ({ page }) => {
   await page.goto("/");
@@ -16,7 +17,7 @@ test("smoke: nav, hero, all 11 blocks render", async ({ page }) => {
 test("no banned surveillance/medical copy", async ({ page }) => {
   await page.goto("/");
   const text = (await page.getByTestId("main").innerText()).toLowerCase();
-  for (const banned of ["monitor your parents", "secure webrtc", "medical emergency", "climb stairs"]) {
+  for (const banned of BANNED_COPY) {
     expect(text).not.toContain(banned);
   }
   expect(text).toContain("privacy-first access controls");

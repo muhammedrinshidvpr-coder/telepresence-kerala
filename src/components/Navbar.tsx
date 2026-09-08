@@ -8,9 +8,9 @@ const LINKS = [
   { href: "#distance", label: "Distance" },
   { href: "#robot", label: "Robot" },
   { href: "#control", label: "Take control" },
+  { href: "#demo", label: "60-sec visit" },
   { href: "#stories", label: "Moments" },
   { href: "#privacy", label: "Privacy" },
-  { href: "#demo", label: "60-sec visit" },
 ];
 
 export default function Navbar() {
@@ -33,13 +33,13 @@ export default function Navbar() {
         <ul className="hidden md:flex items-center gap-6 text-sm font-medium">
           {LINKS.map((l) => (
             <li key={l.href}>
-              <a href={l.href} className="hover:text-coral">
+              <a href={l.href} className="hover:text-coral-deep">
                 {l.label}
               </a>
             </li>
           ))}
           <li>
-            <a href="#cta" data-testid="nav-cta" className="btn-coral !min-h-10 !py-2 !px-5 text-sm">
+            <a href="#cta" data-testid="nav-cta" className="btn-coral py-2! px-5! text-sm">
               Join pilot
             </a>
           </li>

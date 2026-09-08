@@ -32,8 +32,8 @@ export default function StoryContrast() {
       <div className="max-w-6xl mx-auto px-4 grid gap-10 md:grid-cols-2">
         <div>
           <h2 id="story-h" className="text-3xl font-bold">Before → with presence</h2>
-          <div className="mt-4 overflow-hidden rounded-2xl border border-navy/10">
-            <table className="w-full text-sm" data-testid="contrast-table">
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-navy/10">
+            <table className="w-full min-w-[420px] text-sm" data-testid="contrast-table">
               <thead><tr className="bg-navy text-cream"><th className="text-left p-3">Before</th><th className="text-left p-3">With the robot</th></tr></thead>
               <tbody>
                 {ROWS.map(([a, b]) => (

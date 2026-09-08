@@ -9,22 +9,23 @@ import MobilityLab from "@/components/MobilityLab";
 import MalayalamDemo from "@/components/MalayalamDemo";
 import OneMinuteDemo from "@/components/OneMinuteDemo";
 import HowItWorks, { FinalCTA } from "@/components/HowItWorks";
+import { CityProvider } from "@/components/CityContext";
 
 export default function Home() {
   return (
-    <>
+    <CityProvider>
       <Hero />
       <DistanceJourney />
       <RobotReveal />
       <TakeControl />
+      <OneMinuteDemo />
       <UseCases />
       <StoryContrast />
       <MobilityLab />
       <MalayalamDemo />
       <PrivacyStates />
-      <OneMinuteDemo />
       <HowItWorks />
       <FinalCTA />
-    </>
+    </CityProvider>
   );
 }
