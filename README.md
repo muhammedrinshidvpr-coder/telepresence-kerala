@@ -36,11 +36,9 @@ repeats typecheck + lint + build + Playwright on every push.
 
 ## Deploy on Vercel (telepresence-kerala.vercel.app)
 
-This repo uses static export (`output: "export"` → `out/`).
-
 1. Vercel → Add New → Project → Import `muhammedrinshidvpr-coder/telepresence-kerala`.
-2. Framework Preset: Next.js. Build Command: `npm run build`.
-3. **Output Directory: `out`** (Vercel defaults to `.next` — override this or the deploy serves nothing).
+2. Framework Preset: Next.js (default zero-config).
+3. **Output Directory: Leave default (`.next`)**. Do not override to `out`, as Vercel's Next.js builder automatically handles the output and routes manifest.
 4. Deploy. Every push to `master` redeploys automatically; every PR gets a preview URL.
 5. Optional: Settings → Git → Deploy Hooks → create hook for `master` to trigger rebuilds on demand (`POST` the hook URL). Never commit hook URLs or tokens.
 
