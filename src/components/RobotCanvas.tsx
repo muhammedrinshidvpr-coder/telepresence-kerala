@@ -1,15 +1,13 @@
 "use client";
 
-import { Component, useEffect, useRef, type ReactNode } from "react";
+import { Component, useEffect, useRef, useMemo, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
 export type RobotMode = "day" | "night" | "charging";
-export type RobotView = "front" | "side" | "rear";
+export type RobotView = "front" | "side" | "rear" | "iso";
 
-/** Catches WebGL failures (disabled GPU, headless shell) so the page
- *  degrades to the static fallback instead of unmounting entirely. */
 export class RobotErrorBoundary extends Component<
   { onError: () => void; children: ReactNode },
   { failed: boolean }
@@ -27,269 +25,299 @@ export class RobotErrorBoundary extends Component<
 }
 
 export const CAM_POS: Record<RobotView, [number, number, number]> = {
-  front: [0, 2, 5.2],
-  side: [5.2, 2, 0.6],
-  rear: [0, 2.4, -5.2],
+  iso: [3.4, 2.4, 4.2],
+  front: [0, 1.8, 4.5],
+  side: [4.6, 1.6, 0],
+  rear: [0, 2.0, -4.6],
 };
 
 function CameraRig({ view }: { view: RobotView }) {
   const { camera } = useThree();
   useEffect(() => {
     camera.position.set(...CAM_POS[view]);
-    camera.lookAt(0, 1.4, 0);
+    camera.lookAt(0, 0.9, 0);
   }, [camera, view]);
   return null;
 }
 
-function RealisticRobot({ mode }: { mode: RobotMode }) {
-  const group = useRef<THREE.Group>(null);
-  const lightRef = useRef<THREE.MeshStandardMaterial>(null);
-  const leftEyeRef = useRef<THREE.Mesh>(null);
-  const rightEyeRef = useRef<THREE.Mesh>(null);
-  const haloRef = useRef<THREE.MeshStandardMaterial>(null);
+/**
+ * Chunky All-Terrain Rover Wheel with deep transverse treads matching reference images
+ */
+function RuggedTire({ position, isRightSide }: { position: [number, number, number]; isRightSide: boolean }) {
+  // Create 16 chunky outer tread lugs around the tire circumference
+  const lugs = useMemo(() => {
+    return Array.from({ length: 14 }).map((_, i) => {
+      const angle = (i / 14) * Math.PI * 2;
+      return {
+        x: Math.cos(angle) * 0.44,
+        y: Math.sin(angle) * 0.44,
+        rot: angle,
+      };
+    });
+  }, []);
 
-  useFrame((state) => {
-    if (!group.current) return;
+  return (
+    <group position={position}>
+      {/* Main rubber tire cylinder */}
+      <mesh rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.42, 0.42, 0.32, 28]} />
+        <meshStandardMaterial color="#181a1f" roughness={0.92} metalness={0.08} />
+      </mesh>
+
+      {/* Chunky transverse tread lugs for all-terrain grip */}
+      {lugs.map((lug, idx) => (
+        <mesh
+          key={idx}
+          position={[0, lug.y, lug.x]}
+          rotation={[lug.rot, 0, 0]}
+        >
+          <boxGeometry args={[0.34, 0.045, 0.08]} />
+          <meshStandardMaterial color="#131418" roughness={0.95} metalness={0.05} />
+        </mesh>
+      ))}
+
+      {/* Recessed hubcap and center axle bolt */}
+      <mesh
+        rotation={[0, 0, Math.PI / 2]}
+        position={[isRightSide ? 0.14 : -0.14, 0, 0]}
+      >
+        <cylinderGeometry args={[0.26, 0.22, 0.06, 24]} />
+        <meshStandardMaterial color="#212732" roughness={0.4} metalness={0.65} />
+      </mesh>
+      <mesh
+        rotation={[0, 0, Math.PI / 2]}
+        position={[isRightSide ? 0.17 : -0.17, 0, 0]}
+      >
+        <cylinderGeometry args={[0.1, 0.1, 0.03, 16]} />
+        <meshStandardMaterial color="#0f141d" roughness={0.3} metalness={0.8} />
+      </mesh>
+    </group>
+  );
+}
+
+/**
+ * Realistic 4-Wheel Telepresence Rover matching user specifications:
+ * - Dark navy industrial chassis with side hatches
+ * - 4 rugged chunky tires
+ * - Total height from base ~20cm scale ratio
+ * - Significantly bigger optical camera
+ * - Noticeably bigger companion screen
+ * - Status LEDs (green prototype heritage)
+ */
+function RealisticRover({ mode }: { mode: RobotMode }) {
+  const roverGroup = useRef<THREE.Group>(null);
+  const statusLedRef = useRef<THREE.MeshStandardMaterial>(null);
+  const screenGlowRef = useRef<THREE.MeshStandardMaterial>(null);
+
+  useFrame((state, delta) => {
+    if (!roverGroup.current) return;
     const t = state.clock.elapsedTime;
-    // Gentle floating idle breathing
-    group.current.position.y = Math.sin(t * 1.2) * 0.025;
 
-    // Natural eye blink animation (every ~3.5 seconds)
-    const blinkCycle = t % 3.5;
-    const isBlinking = blinkCycle > 3.35;
-    const eyeScaleY = isBlinking ? 0.1 : 1.0;
-    if (leftEyeRef.current) leftEyeRef.current.scale.y = eyeScaleY;
-    if (rightEyeRef.current) rightEyeRef.current.scale.y = eyeScaleY;
+    // Smooth continuous realistic 360-degree auto-rotation
+    roverGroup.current.rotation.y += delta * 0.45;
 
-    // Light pulsing based on mode
-    const active = mode !== "charging";
-    if (lightRef.current) {
-      lightRef.current.emissiveIntensity = active
-        ? 1.5 + Math.sin(t * 2.8) * 0.4
-        : 0.8 + Math.sin(t * 1.5) * 0.3;
+    // Subtle natural suspension breathing vibration
+    roverGroup.current.position.y = Math.sin(t * 1.5) * 0.015;
+
+    // Pulsing status LED and screen illumination
+    if (statusLedRef.current) {
+      statusLedRef.current.emissiveIntensity = 1.4 + Math.sin(t * 3) * 0.4;
     }
-    if (haloRef.current) {
-      haloRef.current.emissiveIntensity = mode === "charging"
-        ? 1.8 + Math.sin(t * 2) * 0.5
-        : mode === "night"
-          ? 0.4
-          : 0.9;
+    if (screenGlowRef.current) {
+      screenGlowRef.current.emissiveIntensity = mode === "charging"
+        ? 0.5 + Math.sin(t * 1.8) * 0.2
+        : 1.1 + Math.sin(t * 2.2) * 0.15;
     }
   });
 
-  // Dynamic theme colors
-  const bodyColor = mode === "night" ? "#14243e" : mode === "charging" ? "#f2f5f3" : "#fdfbf7";
-  const bodyMetal = mode === "night" ? 0.3 : 0.15;
-  const bodyRough = mode === "night" ? 0.4 : 0.25;
-
-  const eyeColor = mode === "charging" ? "#1b7a4d" : mode === "night" ? "#5a9fe6" : "#ffc75f";
-  const lightColor = mode === "charging" ? "#1b7a4d" : mode === "night" ? "#3b82f6" : "#c93f20";
-  const haloColor = mode === "charging" ? "#1b7a4d" : mode === "night" ? "#2563eb" : "#ffc75f";
+  // Dark navy/slate chassis color directly inspired by reference image 2
+  const chassisColor = mode === "night" ? "#131b26" : mode === "charging" ? "#1e2b3c" : "#1c2b3e";
+  const accentNavy = "#131d2b";
+  const screenColor = mode === "charging" ? "#064e3b" : mode === "night" ? "#0f233f" : "#0d1b2a";
+  const screenEmissive = mode === "charging" ? "#10b981" : mode === "night" ? "#38bdf8" : "#60a5fa";
 
   return (
-    <group ref={group} data-testid="robot-3d">
+    <group ref={roverGroup} data-testid="robot-3d">
       {/* ── GROUND CONTACT SHADOW ── */}
       <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0, 1.4, 32]} />
-        <meshBasicMaterial color="#000000" opacity={0.35} transparent depthWrite={false} />
+        <planeGeometry args={[3.2, 3.2]} />
+        <meshBasicMaterial color="#000000" opacity={0.38} transparent depthWrite={false} />
       </mesh>
 
-      {/* ── BASE & CHASSIS ── */}
-      {/* Main contoured base hull */}
-      <mesh position={[0, 0.36, 0]}>
-        <cylinderGeometry args={[0.62, 0.72, 0.32, 32]} />
-        <meshStandardMaterial color={bodyColor} metalness={bodyMetal} roughness={bodyRough} />
-      </mesh>
-      {/* Lower chassis bumper ring */}
-      <mesh position={[0, 0.22, 0]}>
-        <cylinderGeometry args={[0.74, 0.74, 0.12, 32]} />
-        <meshStandardMaterial color="#0c1729" metalness={0.6} roughness={0.4} />
-      </mesh>
-      {/* Ambient LED underglow halo */}
-      <mesh position={[0, 0.18, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.7, 0.02, 16, 40]} />
-        <meshStandardMaterial
-          ref={haloRef}
-          color={haloColor}
-          emissive={haloColor}
-          emissiveIntensity={1.2}
-          toneMapped={false}
-        />
-      </mesh>
+      {/* ── 4 CHUNKY OFF-ROAD TIRES ── */}
+      {/* Front-Left Wheel */}
+      <RuggedTire position={[-0.98, 0.42, 0.72]} isRightSide={false} />
+      {/* Rear-Left Wheel */}
+      <RuggedTire position={[-0.98, 0.42, -0.72]} isRightSide={false} />
+      {/* Front-Right Wheel */}
+      <RuggedTire position={[0.98, 0.42, 0.72]} isRightSide={true} />
+      {/* Rear-Right Wheel */}
+      <RuggedTire position={[0.98, 0.42, -0.72]} isRightSide={true} />
 
-      {/* ── WHEELS & SUSPENSION ── */}
-      {/* Left Drive Wheel */}
-      <group position={[-0.64, 0.28, 0]}>
-        {/* Rubber tire tread */}
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.27, 0.27, 0.14, 28]} />
-          <meshStandardMaterial color="#1a202c" roughness={0.85} metalness={0.1} />
-        </mesh>
-        {/* Kerala-gold rim hubcap */}
-        <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.075, 0, 0]}>
-          <cylinderGeometry args={[0.18, 0.18, 0.02, 24]} />
-          <meshStandardMaterial color="#ffc75f" metalness={0.85} roughness={0.25} />
-        </mesh>
-      </group>
-
-      {/* Right Drive Wheel */}
-      <group position={[0.64, 0.28, 0]}>
-        {/* Rubber tire tread */}
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.27, 0.27, 0.14, 28]} />
-          <meshStandardMaterial color="#1a202c" roughness={0.85} metalness={0.1} />
-        </mesh>
-        {/* Kerala-gold rim hubcap */}
-        <mesh rotation={[0, 0, Math.PI / 2]} position={[0.075, 0, 0]}>
-          <cylinderGeometry args={[0.18, 0.18, 0.02, 24]} />
-          <meshStandardMaterial color="#ffc75f" metalness={0.85} roughness={0.25} />
-        </mesh>
-      </group>
-
-      {/* Front & Rear Caster Stabilizers */}
-      <mesh position={[0, 0.14, 0.52]}>
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshStandardMaterial color="#0c1729" metalness={0.9} roughness={0.2} />
-      </mesh>
-      <mesh position={[0, 0.14, -0.52]}>
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshStandardMaterial color="#0c1729" metalness={0.9} roughness={0.2} />
-      </mesh>
-
-      {/* Front Charging Dock Contacts */}
-      <group position={[0, 0.22, 0.68]}>
-        <mesh>
-          <boxGeometry args={[0.34, 0.06, 0.04]} />
-          <meshStandardMaterial color="#0c1729" metalness={0.5} roughness={0.4} />
-        </mesh>
-        <mesh position={[-0.08, 0, 0.015]}>
-          <boxGeometry args={[0.08, 0.035, 0.02]} />
-          <meshStandardMaterial color="#ffd470" metalness={0.95} roughness={0.15} />
-        </mesh>
-        <mesh position={[0.08, 0, 0.015]}>
-          <boxGeometry args={[0.08, 0.035, 0.02]} />
-          <meshStandardMaterial color="#ffd470" metalness={0.95} roughness={0.15} />
-        </mesh>
-      </group>
-
-      {/* ── TELESCOPIC ALUMINUM COLUMN ── */}
-      {/* Base collar with gold trim */}
-      <mesh position={[0, 0.56, 0]}>
-        <cylinderGeometry args={[0.16, 0.2, 0.12, 24]} />
-        <meshStandardMaterial color="#ffc75f" metalness={0.8} roughness={0.25} />
-      </mesh>
-      {/* Lower brushed aluminum column */}
-      <mesh position={[0, 1.0, 0]}>
-        <cylinderGeometry args={[0.1, 0.11, 0.8, 24]} />
-        <meshStandardMaterial color="#d1d8e0" metalness={0.88} roughness={0.22} />
-      </mesh>
-      {/* Articulation ring */}
-      <mesh position={[0, 1.42, 0]}>
-        <cylinderGeometry args={[0.125, 0.125, 0.06, 24]} />
-        <meshStandardMaterial color="#0c1729" metalness={0.7} roughness={0.3} />
-      </mesh>
-      {/* Upper brushed aluminum column */}
-      <mesh position={[0, 1.68, 0]}>
-        <cylinderGeometry args={[0.085, 0.095, 0.5, 24]} />
-        <meshStandardMaterial color="#e2e8f0" metalness={0.9} roughness={0.18} />
-      </mesh>
-
-      {/* ── HEAD UNIT & EXPRESSIVE OLED SCREEN ── */}
-      <group position={[0, 2.16, 0]}>
-        {/* Head Shell */}
+      {/* ── LOW-PROFILE STABLE ROVER CHASSIS ── */}
+      <group position={[0, 0.48, 0]}>
+        {/* Main curved navy chassis block */}
         <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[0.92, 0.72, 0.42]} />
-          <meshStandardMaterial color={bodyColor} metalness={bodyMetal} roughness={bodyRough} />
-        </mesh>
-        {/* Curved side ears / accent trim */}
-        <mesh position={[-0.47, 0, 0]}>
-          <cylinderGeometry args={[0.28, 0.28, 0.04, 24]} />
-          <meshStandardMaterial color="#0c1729" metalness={0.7} roughness={0.3} />
-        </mesh>
-        <mesh position={[0.47, 0, 0]}>
-          <cylinderGeometry args={[0.28, 0.28, 0.04, 24]} />
-          <meshStandardMaterial color="#0c1729" metalness={0.7} roughness={0.3} />
+          <boxGeometry args={[1.56, 0.38, 2.05]} />
+          <meshStandardMaterial color={chassisColor} metalness={0.25} roughness={0.42} />
         </mesh>
 
-        {/* Front OLED Screen Panel (Dark Glass Bezel) */}
-        <mesh position={[0, 0, 0.215]}>
-          <planeGeometry args={[0.82, 0.6]} />
-          <meshStandardMaterial color="#060a12" roughness={0.12} metalness={0.25} />
+        {/* Rounded top deck lid */}
+        <mesh position={[0, 0.2, 0]}>
+          <boxGeometry args={[1.5, 0.06, 1.98]} />
+          <meshStandardMaterial color="#23354d" metalness={0.3} roughness={0.35} />
         </mesh>
 
-        {/* ── EXPRESSIVE OLED EYES ── */}
-        <group position={[0, -0.04, 0.222]}>
-          {/* Left Eye */}
-          <mesh ref={leftEyeRef} position={[-0.18, 0, 0]}>
-            <capsuleGeometry args={[0.048, 0.09, 8, 16]} />
+        {/* Lower heavy bumper frame */}
+        <mesh position={[0, -0.16, 0]}>
+          <boxGeometry args={[1.44, 0.12, 1.95]} />
+          <meshStandardMaterial color={accentNavy} metalness={0.5} roughness={0.5} />
+        </mesh>
+
+        {/* Side service hatch recesses (matching reference image) */}
+        {/* Left hatch */}
+        <mesh position={[-0.79, 0, 0]}>
+          <boxGeometry args={[0.02, 0.22, 0.7]} />
+          <meshStandardMaterial color={accentNavy} metalness={0.6} roughness={0.4} />
+        </mesh>
+        {/* Right hatch */}
+        <mesh position={[0.79, 0, 0]}>
+          <boxGeometry args={[0.02, 0.22, 0.7]} />
+          <meshStandardMaterial color={accentNavy} metalness={0.6} roughness={0.4} />
+        </mesh>
+
+        {/* Front bumper cutouts and Dual Green Status LEDs (prototype heritage) */}
+        <mesh position={[0, -0.04, 1.03]}>
+          <boxGeometry args={[0.85, 0.18, 0.02]} />
+          <meshStandardMaterial color="#101824" metalness={0.6} roughness={0.3} />
+        </mesh>
+        <group position={[0.42, -0.04, 1.04]}>
+          <mesh position={[0, 0.03, 0]}>
+            <sphereGeometry args={[0.022, 12, 12]} />
             <meshStandardMaterial
-              color={eyeColor}
-              emissive={eyeColor}
+              ref={statusLedRef}
+              color="#22c55e"
+              emissive="#22c55e"
               emissiveIntensity={1.8}
-              toneMapped={false}
             />
           </mesh>
-          {/* Right Eye */}
-          <mesh ref={rightEyeRef} position={[0.18, 0, 0]}>
-            <capsuleGeometry args={[0.048, 0.09, 8, 16]} />
-            <meshStandardMaterial
-              color={eyeColor}
-              emissive={eyeColor}
-              emissiveIntensity={1.8}
-              toneMapped={false}
-            />
+          <mesh position={[0, -0.03, 0]}>
+            <sphereGeometry args={[0.022, 12, 12]} />
+            <meshStandardMaterial color="#22c55e" emissive="#22c55e" emissiveIntensity={1.8} />
           </mesh>
         </group>
+      </group>
 
-        {/* ── OPTICAL CAMERA LENS ── */}
-        <group position={[0, 0.19, 0.22]}>
-          {/* Outer Lens Bezel */}
+      {/* ── CENTRAL NECK POLE (20cm proportional height from base) ── */}
+      <group position={[0, 0.72, 0]}>
+        {/* Base collar mounting ring */}
+        <mesh position={[0, 0.04, 0]}>
+          <cylinderGeometry args={[0.18, 0.24, 0.1, 24]} />
+          <meshStandardMaterial color={accentNavy} metalness={0.7} roughness={0.3} />
+        </mesh>
+        {/* Sleek vertical riser column */}
+        <mesh position={[0, 0.44, 0]}>
+          <cylinderGeometry args={[0.11, 0.12, 0.74, 24]} />
+          <meshStandardMaterial color="#1e2c3e" metalness={0.45} roughness={0.35} />
+        </mesh>
+        {/* Neck articulation tilt joint */}
+        <mesh position={[0, 0.82, 0]}>
+          <sphereGeometry args={[0.14, 20, 20]} />
+          <meshStandardMaterial color="#0f1622" metalness={0.8} roughness={0.25} />
+        </mesh>
+      </group>
+
+      {/* ── ENLARGED HEAD UNIT (BIGGER CAMERA & BIGGER SCREEN) ── */}
+      <group position={[0, 1.76, 0]}>
+        {/* Rounded head casing */}
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[0.88, 0.96, 0.48]} />
+          <meshStandardMaterial color={chassisColor} metalness={0.35} roughness={0.38} />
+        </mesh>
+
+        {/* Front dark bezel faceplate */}
+        <mesh position={[0, 0, 0.245]}>
+          <boxGeometry args={[0.82, 0.9, 0.02]} />
+          <meshStandardMaterial color="#0b111a" roughness={0.15} metalness={0.8} />
+        </mesh>
+
+        {/* ── ENLARGED OPTICAL CAMERA (Prominent at top of head) ── */}
+        <group position={[0, 0.25, 0.26]}>
+          {/* Heavy outer camera ring */}
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.075, 0.075, 0.02, 24]} />
-            <meshStandardMaterial color="#1a202c" metalness={0.8} roughness={0.2} />
+            <cylinderGeometry args={[0.14, 0.14, 0.03, 32]} />
+            <meshStandardMaterial color="#1c2430" metalness={0.85} roughness={0.2} />
           </mesh>
-          {/* Gold Aperture Ring */}
-          <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.008]}>
-            <cylinderGeometry args={[0.06, 0.06, 0.015, 24]} />
-            <meshStandardMaterial color="#ffc75f" metalness={0.9} roughness={0.15} />
+          {/* Aperture accent rim */}
+          <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.012]}>
+            <cylinderGeometry args={[0.11, 0.11, 0.02, 32]} />
+            <meshStandardMaterial color="#2d3748" metalness={0.9} roughness={0.15} />
           </mesh>
-          {/* Inner Optical Glass Lens Element */}
-          <mesh position={[0, 0, 0.014]}>
-            <sphereGeometry args={[0.042, 20, 20]} />
+          {/* Convex optical glass lens with deep blue anti-reflective reflection */}
+          <mesh position={[0, 0, 0.02]}>
+            <sphereGeometry args={[0.088, 24, 24]} />
             <meshStandardMaterial
-              color="#091b29"
-              roughness={0.05}
-              metalness={0.9}
-              emissive="#1e40af"
-              emissiveIntensity={0.3}
+              color="#0a192f"
+              roughness={0.04}
+              metalness={0.92}
+              emissive="#1e3a8a"
+              emissiveIntensity={0.35}
             />
           </mesh>
-          {/* Pupil Center / Reflection Catchlight */}
-          <mesh position={[0.012, 0.012, 0.038]}>
-            <circleGeometry args={[0.012, 16]} />
-            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={2} />
+          {/* Lens catchlight specular gleam */}
+          <mesh position={[0.03, 0.03, 0.09]}>
+            <circleGeometry args={[0.018, 16]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          {/* Microphone pinhole beside camera */}
+          <mesh position={[0.22, 0, 0.01]}>
+            <circleGeometry args={[0.012, 12]} />
+            <meshBasicMaterial color="#05080e" />
           </mesh>
         </group>
 
-        {/* ── MICROPHONE & SPEAKER GRILLE ── */}
-        <group position={[0, -0.22, 0.22]}>
-          {[-0.12, -0.06, 0, 0.06, 0.12].map((x, i) => (
-            <mesh key={i} position={[x, 0, 0]}>
-              <circleGeometry args={[0.008, 12]} />
-              <meshStandardMaterial color="#1f293d" metalness={0.5} roughness={0.5} />
+        {/* ── NOTICEABLY BIGGER LANDSCAPE SCREEN (Below Camera) ── */}
+        <group position={[0, -0.19, 0.26]}>
+          {/* Screen outer border frame */}
+          <mesh>
+            <planeGeometry args={[0.72, 0.44]} />
+            <meshStandardMaterial color="#111827" roughness={0.2} metalness={0.6} />
+          </mesh>
+          {/* Vibrant active OLED screen display panel */}
+          <mesh position={[0, 0, 0.005]}>
+            <planeGeometry args={[0.68, 0.4]} />
+            <meshStandardMaterial
+              ref={screenGlowRef}
+              color={screenColor}
+              emissive={screenEmissive}
+              emissiveIntensity={1.0}
+              roughness={0.1}
+            />
+          </mesh>
+          {/* Screen UI elements: Family waveform and status dot */}
+          <group position={[0, 0, 0.01]}>
+            {/* Connection status indicator */}
+            <mesh position={[-0.26, 0.14, 0]}>
+              <circleGeometry args={[0.016, 16]} />
+              <meshBasicMaterial color="#22c55e" />
             </mesh>
-          ))}
+            {/* Friendly audio waveform bars on screen */}
+            {[-0.14, -0.07, 0, 0.07, 0.14].map((x, i) => (
+              <mesh key={i} position={[x, -0.02, 0]}>
+                <planeGeometry args={[0.022, 0.12 + (i % 2 === 0 ? 0.08 : 0.03)]} />
+                <meshBasicMaterial color="#ffffff" opacity={0.85} transparent />
+              </mesh>
+            ))}
+          </group>
         </group>
 
-        {/* ── STATUS LIGHT BAR (Top Crown) ── */}
-        <mesh position={[0, 0.37, 0]}>
-          <boxGeometry args={[0.5, 0.04, 0.16]} />
+        {/* Ambient Top Light Bar */}
+        <mesh position={[0, 0.49, 0]}>
+          <boxGeometry args={[0.56, 0.035, 0.2]} />
           <meshStandardMaterial
-            ref={lightRef}
-            color={lightColor}
-            emissive={lightColor}
-            emissiveIntensity={1.6}
-            toneMapped={false}
+            color={mode === "charging" ? "#10b981" : "#38bdf8"}
+            emissive={mode === "charging" ? "#10b981" : "#0284c7"}
+            emissiveIntensity={1.5}
           />
         </mesh>
       </group>
@@ -308,7 +336,7 @@ export default function RobotCanvas({
 }) {
   return (
     <Canvas
-      camera={{ position: CAM_POS[view], fov: 45 }}
+      camera={{ position: CAM_POS[view], fov: 42 }}
       dpr={[1, 2]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
@@ -318,42 +346,41 @@ export default function RobotCanvas({
       style={{ touchAction: "pan-y" }}
     >
       <CameraRig view={view} />
-      {/* Studio Lighting Rig */}
-      <ambientLight intensity={mode === "night" ? 0.6 : 0.9} />
-      <directionalLight position={[5, 8, 5]} intensity={mode === "night" ? 0.8 : 1.5} castShadow />
-      <directionalLight position={[-4, 4, -4]} intensity={mode === "night" ? 0.4 : 0.8} color="#93c5fd" />
-      <pointLight
-        position={[0, 3.2, 2.5]}
-        intensity={mode === "charging" ? 0.6 : 1.2}
-        color={mode === "charging" ? "#10b981" : "#ffd470"}
-      />
-      <pointLight position={[0, 0.3, 0]} intensity={mode === "charging" ? 1.2 : 0.5} color="#10b981" />
 
-      {/* Realistic Companion Robot */}
-      <RealisticRobot mode={mode} />
+      {/* Cinematic Studio Lighting Rig */}
+      <ambientLight intensity={mode === "night" ? 0.7 : 1.1} />
+      <directionalLight position={[6, 9, 6]} intensity={1.8} castShadow color="#ffffff" />
+      <directionalLight position={[-5, 4, -4]} intensity={0.9} color="#93c5fd" />
+      <directionalLight position={[0, 6, -6]} intensity={0.6} color="#ffd470" />
+      <pointLight position={[0, 3.5, 3]} intensity={1.2} color="#ffffff" />
+      <pointLight position={[0, 0.2, 0]} intensity={0.8} color="#38bdf8" />
 
-      {/* Dock Platform with concentric design */}
+      {/* Realistic 4-Wheel Rover Model */}
+      <RealisticRover mode={mode} />
+
+      {/* Circular Inspection Turntable Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
-        <circleGeometry args={[2.5, 48]} />
+        <circleGeometry args={[2.8, 64]} />
         <meshStandardMaterial
-          color={mode === "charging" ? "#d1fae5" : mode === "night" ? "#0f172a" : "#f1e7d2"}
-          roughness={0.6}
+          color={mode === "charging" ? "#11221b" : mode === "night" ? "#0b121e" : "#eef3f8"}
+          roughness={0.75}
+          metalness={0.15}
         />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0]}>
-        <ringGeometry args={[2.3, 2.4, 48]} />
-        <meshStandardMaterial color="#ffc75f" metalness={0.7} roughness={0.3} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
+        <ringGeometry args={[2.7, 2.76, 64]} />
+        <meshStandardMaterial color="#38bdf8" metalness={0.8} roughness={0.2} emissive="#0284c7" emissiveIntensity={0.6} />
       </mesh>
 
+      {/* Drag, Zoom, and Orbit Controls */}
       <OrbitControls
         enablePan={false}
         enableDamping
-        dampingFactor={0.08}
-        minDistance={3}
-        maxDistance={8.5}
-        maxPolarAngle={Math.PI / 2 + 0.05}
+        dampingFactor={0.07}
+        minDistance={2.8}
+        maxDistance={7.5}
+        maxPolarAngle={Math.PI / 2 + 0.02}
       />
     </Canvas>
   );
 }
-

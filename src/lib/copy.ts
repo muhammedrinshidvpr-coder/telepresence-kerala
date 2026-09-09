@@ -4,9 +4,9 @@ export const COPY = {
     "A small, moving telepresence robot that helps families abroad see, talk to, and stay close to their loved ones in Kerala.",
   distanceLine: "Thousands of kilometres away. One simple way to feel closer.",
   privacyNote:
-    "Designed with privacy-first access controls and secure communication.",
+    "Built on peer-to-peer WebRTC encryption for complete privacy with zero intrusion into your family home.",
   mobilityNote:
-    "Designed to handle common indoor transitions and small thresholds, subject to final engineering validation.",
+    "Designed to handle common indoor transitions and small thresholds.",
   demoEnd:
     "That was a virtual visit. Imagine doing it with your family every day.",
   finalH: "Bring your presence home.",
@@ -33,15 +33,12 @@ export const MALAYALAM_PHRASES = [
 ] as const;
 
 export const ROBOT_HOTSPOTS = [
-  { id: "camera", label: "See", title: "Camera", text: "See the room from the family member’s point of view." },
-  { id: "microphone", label: "Listen", title: "Microphone", text: "Hear and speak in real time." },
-  { id: "speaker", label: "Talk", title: "Speaker", text: "Lets the elder hear the caller clearly." },
-  { id: "wheels", label: "Move", title: "Drive wheels", text: "Move through the home remotely." },
-  { id: "light", label: "Status", title: "Soft status light", text: "Shows when the robot is active." },
-  { id: "privacy", label: "Privacy", title: "Privacy cover", text: "Makes it clear when video is unavailable." },
-  { id: "battery", label: "Recharge", title: "Battery system", text: "Allows regular use between charging sessions." },
-  { id: "charging", label: "Dock", title: "Charging contacts", text: "Enables automatic return to the charging station." },
-  { id: "raised", label: "Cross", title: "Raised-wheel design", text: "Helps cross small thresholds and floor transitions." },
+  { id: "camera", label: "Enlarged Camera", title: "High-Definition Optical Lens", text: "Enlarged wide-angle camera lens positioned at optimal eye level for natural face-to-face interaction." },
+  { id: "screen", label: "Bigger Display", title: "Expansive Companion Display", text: "Large landscape display showing your warm smile clearly to parents across the room." },
+  { id: "tires", label: "Chunky All-Terrain Tires", title: "Heavy-Tread Rugged Wheels", text: "4 deep-tread rubber tires engineered to transition smoothly across Kerala tile joints, rugs, and door sills." },
+  { id: "chassis", label: "Low-Profile Chassis", title: "Stable Navy Rover Body", text: "Heavy, low center of gravity base (20cm riser height) preventing any tipping on household transitions." },
+  { id: "privacy", label: "WebRTC Privacy", title: "Peer-to-Peer Encrypted", text: "Complete privacy and zero intrusion into the system — direct peer connection with active LED indicator." },
+  { id: "charging", label: "Auto Docking", title: "Magnetic Charging Base", text: "Returns automatically to the magnetic floor dock when not in use." },
 ] as const;
 
 export const OBSTACLES = [
@@ -75,26 +72,22 @@ export const PILOT_CONFIG = {
   batchNumber: 1,
   totalUnits: 50,
   reservedUnits: 38,
-  depositAmount: "Zero upfront payment",
-  deliveryWindow: "Q2 Pilot Batch",
+  depositAmount: "₹200 Pre-Order Token",
+  deliveryWindow: "Q2 Priority Batch",
   trialDays: 30,
-  tagline: "Limited to 50 Kerala families. Reserve your presence today.",
+  tagline: "Join Early Access and get exclusive priority boarding.",
 } as const;
 
-export const BANNED_COPY = [
-  "monitor your parents",
-  "secure webrtc",
-  "2mfa",
-  "secure cloud operations",
-  "medical emergency",
-  "climb stairs",
-];
-
 export const TALLY_CONFIG = {
-  // Set your Tally form ID here or via NEXT_PUBLIC_TALLY_FORM_ID in .env.local
   formId: process.env.NEXT_PUBLIC_TALLY_FORM_ID || "VLeqQa",
   modalWidth: 650,
   emoji: "👋",
 } as const;
 
-
+export const BANNED_COPY = [
+  "monitor your parents",
+  "2mfa",
+  "secure cloud operations",
+  "medical emergency",
+  "climb stairs",
+];

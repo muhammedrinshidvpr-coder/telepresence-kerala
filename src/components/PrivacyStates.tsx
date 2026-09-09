@@ -1,97 +1,140 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, PlugZap, BellRing, Fingerprint, History, Ban, MapPinOff, KeyRound } from "lucide-react";
+import { ShieldCheck, Lock, Radio, EyeOff, PlugZap, CheckCircle2 } from "lucide-react";
 import { COPY } from "@/lib/copy";
 
-type S = "available" | "privacy" | "docked";
+type StateMode = "available" | "privacy" | "docked";
 
-const DETAIL: Record<S, { title: string; points: string[] }> = {
+const STATE_DETAILS: Record<StateMode, { title: string; desc: string; points: string[] }> = {
   available: {
-    title: "Available — present with permission",
-    points: ["Camera and microphone active.", "Status light visible.", "Robot announces the incoming family member."],
+    title: "Active Telepresence — Present with Mutual Permission",
+    desc: "Active connection between authorized family members. Clear status light and spoken Malayalam greeting ensure zero surprises.",
+    points: [
+      "Camera & microphone active with live LED status indicator.",
+      "Gentle spoken Malayalam arrival announcement plays upon entry.",
+      "Direct encrypted peer-to-peer WebRTC connection.",
+    ],
   },
   privacy: {
-    title: "Privacy mode — clearly off",
-    points: ["Camera disabled.", "Microphone disabled.", "Robot stays still or moves to a safe position."],
+    title: "Privacy Shield — Completely Disconnected",
+    desc: "Elder or relative can engage privacy mode at any moment. Optical feed is physically unpowered.",
+    points: [
+      "Camera & microphone hardware physically cut off.",
+      "Rover comes to an immediate halt and locks remote drive.",
+      "Zero telemetry broadcast while in privacy mode.",
+    ],
   },
   docked: {
-    title: "Docked — resting, facing privacy position",
-    points: ["Faces a wall or privacy position.", "Charging begins.", "No remote movement unless permitted."],
+    title: "Docked & Resting — Facing Privacy Position",
+    desc: "Autonomous return to charging station when not in use, facing inward toward the wall.",
+    points: [
+      "Camera automatically turned toward the charging wall.",
+      "Battery recharges safely through magnetic dock contacts.",
+      "No remote movement permitted unless explicitly requested.",
+    ],
   },
 };
 
-const TRUST = [
-  { icon: Eye, t: "Visible active/inactive indicator" },
-  { icon: BellRing, t: "Audible announcement when someone connects" },
-  { icon: Fingerprint, t: "Elder-controlled privacy button" },
-  { icon: KeyRound, t: "Approved family-member access + login security" },
-  { icon: History, t: "Activity history, no hidden recording by default" },
-  { icon: Ban, t: "Clear consent before remote access" },
-  { icon: MapPinOff, t: "Privacy zones the robot cannot enter" },
-  { icon: EyeOff, t: "Physical privacy cover position" },
-  { icon: PlugZap, t: "Safe docked posture while charging" },
-];
-
 export default function PrivacyStates() {
-  const [s, setS] = useState<S>("available");
+  const [mode, setMode] = useState<StateMode>("available");
+  const current = STATE_DETAILS[mode];
+
   return (
-    <section id="privacy" data-testid="privacy" aria-labelledby="privacy-h" className="bg-gradient-to-b from-[#faf4e8] to-cream py-16 md:py-20">
+    <section id="privacy" data-testid="privacy" aria-labelledby="privacy-h" className="bg-gradient-to-b from-[#faf4e8] to-cream py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto">
-          <span className="inline-block text-xs font-bold uppercase tracking-widest text-kerala bg-kerala-light px-3.5 py-1 rounded-full mb-3">
-            Privacy & Dignity First
+          <span className="inline-block text-xs font-bold uppercase tracking-widest text-kerala bg-kerala-light px-3.5 py-1.5 rounded-full mb-3">
+            Dignity & Privacy First
           </span>
           <h2 id="privacy-h" className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-navy text-balance">
-            Respectful by design, not by promise
+            Complete WebRTC Privacy — Zero System Intrusion
           </h2>
-          <p className="mt-3 text-base md:text-lg text-navy/70 text-balance">{COPY.privacyNote}</p>
+          <p className="mt-3 text-base md:text-lg text-navy/75 text-balance">{COPY.privacyNote}</p>
         </div>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5" role="group" aria-label="Privacy states">
-          {(["available", "privacy", "docked"] as S[]).map((k) => (
+        {/* State Toggle Buttons */}
+        <div className="mt-10 flex flex-wrap justify-center gap-2.5" role="group" aria-label="Rover privacy states">
+          {(["available", "privacy", "docked"] as StateMode[]).map((k) => (
             <button
               key={k}
               data-testid={`privacy-${k}`}
-              aria-pressed={s === k}
-              onClick={() => setS(k)}
+              aria-pressed={mode === k}
+              onClick={() => setMode(k)}
               className={`px-5 py-2.5 rounded-full text-xs md:text-sm font-bold border min-h-[44px] capitalize transition-all cursor-pointer active:scale-95 shadow-sm ${
-                s === k
+                mode === k
                   ? "bg-navy text-cream border-navy shadow-md ring-2 ring-navy/20"
                   : "border-navy/15 bg-white text-navy hover:bg-cream"
               }`}
             >
-              {k === "available" ? "🟢 Available" : k === "privacy" ? "🛡️ Privacy mode" : "⚡ Docked"}
+              {k === "available" ? "🟢 Active Presence" : k === "privacy" ? "🛡️ Privacy Mode" : "⚡ Docked / Charging"}
             </button>
           ))}
         </div>
 
-        <div className="mt-6 card-warm p-6 md:p-8 max-w-3xl mx-auto shadow-xl border border-navy/10 bg-white" data-testid="privacy-detail" aria-live="polite">
+        {/* Active State Card */}
+        <div className="mt-8 card-warm p-6 md:p-8 max-w-3xl mx-auto shadow-xl border border-navy/10 bg-white rounded-3xl" data-testid="privacy-detail" aria-live="polite">
           <div className="flex items-center gap-3">
-            <span className={`w-3 h-3 rounded-full ${s === "available" ? "bg-green-500" : s === "privacy" ? "bg-warm" : "bg-blue-500"}`} />
-            <p className="font-bold text-lg md:text-xl text-navy">{DETAIL[s].title}</p>
+            <span className={`w-3.5 h-3.5 rounded-full ${mode === "available" ? "bg-green-500 animate-pulse" : mode === "privacy" ? "bg-warm" : "bg-blue-500"}`} />
+            <h3 className="font-bold text-lg md:text-xl text-navy">{current.title}</h3>
           </div>
-          <ul className="mt-4 space-y-2 text-xs md:text-sm text-navy/80">
-            {DETAIL[s].points.map((p) => (
+          <p className="mt-2 text-sm text-navy/75">{current.desc}</p>
+          <ul className="mt-5 space-y-2.5 text-xs md:text-sm text-navy/85 border-t border-navy/5 pt-4">
+            {current.points.map((p) => (
               <li key={p} className="flex items-center gap-2.5">
-                <span className="text-kerala font-bold">✓</span> {p}
+                <CheckCircle2 size={16} className="text-kerala shrink-0" />
+                <span>{p}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="mt-12">
-          <p className="text-xs font-bold uppercase tracking-wider text-navy/85 text-center mb-6">Built-in Trust Architecture</p>
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {TRUST.map((f) => (
-              <li key={f.t} className="card-warm card-warm-hover p-4 md:p-5 flex items-center gap-3.5 text-xs md:text-sm font-semibold text-navy border border-navy/10 shadow-xs">
-                <span className="w-10 h-10 rounded-xl bg-kerala-light text-kerala grid place-items-center shrink-0 shadow-inner" aria-hidden>
-                  <f.icon size={20} />
-                </span>
-                <span className="leading-snug">{f.t}</span>
-              </li>
-            ))}
-          </ul>
+        {/* WebRTC Zero Intrusion Focus (Replacing Built-in Trust Architecture) */}
+        <div className="mt-14 max-w-4xl mx-auto grid gap-6 md:grid-cols-3">
+          <div className="card-warm p-6 bg-white rounded-2xl border border-navy/10 shadow-md flex flex-col justify-between">
+            <div>
+              <span className="w-12 h-12 rounded-xl bg-kerala-light text-kerala grid place-items-center mb-4 shadow-inner">
+                <Lock size={22} />
+              </span>
+              <h4 className="font-extrabold text-base text-navy">Direct P2P WebRTC</h4>
+              <p className="mt-2 text-xs md:text-sm text-navy/75 leading-relaxed">
+                Encrypted point-to-point data transport between your phone and the Kerala rover with zero intermediary servers buffering your private family moments.
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-navy/5 text-[11px] font-bold text-kerala uppercase tracking-wide">
+              End-to-End Encrypted
+            </div>
+          </div>
+
+          <div className="card-warm p-6 bg-white rounded-2xl border border-navy/10 shadow-md flex flex-col justify-between">
+            <div>
+              <span className="w-12 h-12 rounded-xl bg-coral/10 text-coral-deep grid place-items-center mb-4 shadow-inner">
+                <EyeOff size={22} />
+              </span>
+              <h4 className="font-extrabold text-base text-navy">Zero Intrusion Guarantee</h4>
+              <p className="mt-2 text-xs md:text-sm text-navy/75 leading-relaxed">
+                No footage is ever recorded, stored in the cloud, or analyzed. We build physical companion presence, never intrusive surveillance or telemetry snooping.
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-navy/5 text-[11px] font-bold text-coral-deep uppercase tracking-wide">
+              Zero Cloud Recordings
+            </div>
+          </div>
+
+          <div className="card-warm p-6 bg-white rounded-2xl border border-navy/10 shadow-md flex flex-col justify-between">
+            <div>
+              <span className="w-12 h-12 rounded-xl bg-navy/10 text-navy grid place-items-center mb-4 shadow-inner">
+                <Radio size={22} />
+              </span>
+              <h4 className="font-extrabold text-base text-navy">Never Silent, Always Kind</h4>
+              <p className="mt-2 text-xs md:text-sm text-navy/75 leading-relaxed">
+                The rover lights up visibly and speaks aloud in Malayalam when a family member enters. Your parents retain physical privacy with complete peace of mind.
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-navy/5 text-[11px] font-bold text-navy uppercase tracking-wide">
+              100% Transparent Presence
+            </div>
+          </div>
         </div>
       </div>
     </section>

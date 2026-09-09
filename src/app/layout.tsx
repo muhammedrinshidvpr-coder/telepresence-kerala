@@ -1,20 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Noto_Sans_Malayalam } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Script from "next/script";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const malayalam = Noto_Sans_Malayalam({
-  variable: "--font-malayalam",
-  subsets: ["malayalam", "latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -23,9 +10,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Be There, From Anywhere — Telepresence Robot for Kerala Families",
+  title: "Be There Kerala — Autonomous Telepresence Rover for Kerala Families",
   description:
-    "A small, moving telepresence robot that helps families abroad see, talk to, and stay close to their loved ones in Kerala. A call can be missed. Your presence shouldn't be.",
+    "A rugged telepresence rover that helps families in the GCC see, speak to, and navigate Kerala homes effortlessly. Complete WebRTC privacy with zero intrusion.",
 };
 
 export default function RootLayout({
@@ -34,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${malayalam.variable}`}>
-      <body className="min-h-screen flex flex-col bg-cream text-navy">
+    <html lang="en">
+      <body className="min-h-screen flex flex-col bg-cream text-navy antialiased">
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-warm focus:px-4 focus:py-2 focus:rounded-full"
@@ -47,10 +34,6 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <Script
-          src="https://tally.so/widgets/embed.js"
-          strategy="lazyOnload"
-        />
       </body>
     </html>
   );

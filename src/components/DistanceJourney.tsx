@@ -1,145 +1,241 @@
 "use client";
 
-import { useState } from "react";
-import { MapPin, BellRing } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MapPin, Radio, Plane, Sparkles, Navigation } from "lucide-react";
 import { COPY, GCC_CITIES } from "@/lib/copy";
 import { useCity } from "./CityContext";
 
+// City map coordinates on our regional map projection (viewBox 0 0 700 360)
+const CITY_COORDS: Record<string, { x: number; y: number }> = {
+  kuwait: { x: 120, y: 110 },
+  manama: { x: 170, y: 138 },
+  doha: { x: 195, y: 155 },
+  riyadh: { x: 140, y: 175 },
+  abudhabi: { x: 235, y: 168 },
+  dubai: { x: 255, y: 152 },
+  muscat: { x: 290, y: 185 },
+};
+
+// Kerala destination coordinates
+const KERALA_COORD = { x: 540, y: 265 };
+
 export default function DistanceJourney() {
   const { city, setCityId } = useCity();
-  const [distance, setDistance] = useState(60);
-  const activeId = city.id;
-  const weakness = Math.round(distance); // 0..100
-  const opacity = (100 - weakness) / 100;
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  // Auto-replay animation: cycle through GCC key cities smoothly
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => {
+        const next = (prev + 1) % GCC_CITIES.length;
+        setCityId(GCC_CITIES[next].id);
+        return next;
+      });
+    }, 3800);
+    return () => clearInterval(timer);
+  }, [setCityId]);
+
+  const currentCity = GCC_CITIES[activeIdx] || city;
+  const origin = CITY_COORDS[currentCity.id] || { x: 255, y: 152 };
+
+  // Generate quadratic Bezier curved arc across the Arabian Sea
+  const midX = (origin.x + KERALA_COORD.x) / 2;
+  const midY = Math.min(origin.y, KERALA_COORD.y) - 65;
+  const arcPath = `M ${origin.x} ${origin.y} Q ${midX} ${midY} ${KERALA_COORD.x} ${KERALA_COORD.y}`;
 
   return (
-    <section id="distance" data-testid="distance" aria-labelledby="distance-h" className="bg-gradient-to-b from-[#faf4e8] to-[#f4ebdc] py-16 md:py-20">
+    <section id="distance" data-testid="distance" aria-labelledby="distance-h" className="bg-gradient-to-b from-[#faf4e8] to-[#f4ebdc] py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto">
           <p className="text-xs font-bold uppercase tracking-widest text-kerala bg-kerala-light inline-block px-3.5 py-1.5 rounded-full">
-            Bridging the Miles
+            Autonomous Bridge Across Oceans
           </p>
-          <h2 id="distance-h" className="mt-3 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+          <h2 id="distance-h" className="mt-3 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance text-navy">
             Thousands of kilometres, one familiar presence
           </h2>
           <p className="mt-3 text-base md:text-lg text-navy/75 text-balance">{COPY.distanceLine}</p>
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.25fr] items-start">
-          <div className="card-warm p-6 shadow-md border border-navy/10">
-            <p className="font-bold text-base flex items-center gap-2 text-navy" id="city-group-label">
-              <MapPin size={18} className="text-coral" aria-hidden /> Select your location in the GCC
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="city-group-label">
-              {GCC_CITIES.map((c) => (
-                <button
-                  key={c.id}
-                  data-testid={`city-${c.id}`}
-                  onClick={() => setCityId(c.id)}
-                  aria-pressed={activeId === c.id}
-                  className={`px-4 py-2 rounded-full text-xs md:text-sm font-semibold border min-h-[44px] transition-all duration-200 cursor-pointer active:scale-95 ${
-                    activeId === c.id
-                      ? "bg-navy text-cream border-navy shadow-md ring-2 ring-navy/20"
-                      : "border-navy/20 bg-white text-navy hover:bg-cream/60"
-                  }`}
-                >
-                  {c.label}
-                </button>
-              ))}
+        {/* City Pills - auto highlighted with manual override option */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+          {GCC_CITIES.map((c, idx) => {
+            const isSelected = c.id === currentCity.id;
+            return (
+              <button
+                key={c.id}
+                data-testid={`city-${c.id}`}
+                onClick={() => {
+                  setActiveIdx(idx);
+                  setCityId(c.id);
+                }}
+                className={`px-4 py-2 rounded-full text-xs md:text-sm font-semibold border min-h-[40px] transition-all duration-300 cursor-pointer active:scale-95 shadow-sm ${
+                  isSelected
+                    ? "bg-navy text-cream border-navy shadow-md scale-105 ring-2 ring-navy/20"
+                    : "border-navy/15 bg-white/80 text-navy hover:bg-white"
+                }`}
+              >
+                <span className="font-bold">{c.label}</span>
+                <span className="text-[10px] ml-1.5 opacity-70">({c.km.toLocaleString()} km)</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Auto-replay World/Regional Map Animation */}
+        <div className="mt-8 card-warm p-6 md:p-8 overflow-hidden shadow-2xl border border-navy/10 bg-gradient-to-br from-white via-[#fcfaf6] to-[#f5eee2] rounded-3xl" aria-live="polite">
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm font-bold text-navy mb-4 pb-3 border-b border-navy/10">
+            <div className="flex items-center gap-2">
+              <Radio size={16} className="text-coral animate-pulse" />
+              <span>Direct Telepresence Link: <strong className="text-coral-deep">{currentCity.label} ({currentCity.ml})</strong> → <strong className="text-kerala">Kerala Home</strong></span>
             </div>
-
-            <div className="mt-4 p-3.5 rounded-xl bg-cream-dark/50 border border-navy/5 text-xs text-navy/85 space-y-1">
-              <p className="font-semibold text-navy" data-testid="route-label">
-                Visual route: {city.label} → Kerala home • ~{city.km.toLocaleString()} km
-              </p>
-              <p className="text-navy/85">Average telepresence latency: ~45ms • Gulf to Kerala direct stream</p>
+            <div className="flex items-center gap-3 text-xs text-navy/85">
+              <span className="bg-kerala/10 text-kerala px-3 py-1 rounded-full font-bold">~{currentCity.km.toLocaleString()} km distance</span>
+              <span className="bg-navy/10 text-navy px-3 py-1 rounded-full font-semibold">Ultra-low ~45ms latency</span>
             </div>
-
-            <label htmlFor="distance-slider" className="mt-6 block font-bold text-sm text-navy">
-              Simulate distance — feel traditional phone calls weaken
-            </label>
-            <input
-              id="distance-slider"
-              data-testid="distance-slider"
-              type="range"
-              min={0}
-              max={100}
-              value={distance}
-              onChange={(e) => setDistance(Number(e.target.value))}
-              className="w-full mt-3 h-2.5 bg-cream-dark rounded-lg appearance-none cursor-pointer accent-coral"
-              aria-valuetext={`${weakness}% distant`}
-            />
-
-            <ul className="mt-4 text-xs md:text-sm text-navy/85 space-y-1.5">
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-coral" /> Missed phone calls across time zones
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-coral" /> Demanding work schedules while parents stay alone
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-coral" /> Constant anxiety when calls go unanswered
-              </li>
-            </ul>
-
-            <a href="#control" data-testid="btn-be-there" className="btn-coral mt-6 w-full shadow-md">
-              <BellRing size={18} aria-hidden className="mr-2" /> Be there now
-            </a>
           </div>
 
-          {/* Interactive Trajectory Map */}
-          <div className="card-warm p-6 overflow-hidden shadow-lg border border-navy/10 bg-gradient-to-br from-white to-[#fbf8f2]" aria-live="polite">
-            <div className="flex items-center justify-between text-xs font-semibold text-navy/85 mb-2">
-              <span>Arabian Sea Telepresence Route</span>
-              <span className="text-kerala font-bold flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-kerala animate-pulse" /> Live connection
-              </span>
-            </div>
+          {/* Regional Map Vector Graphic */}
+          <div className="relative w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#e8f1f8] via-[#e2eef7] to-[#d6e7f3] p-2 border border-navy/10 shadow-inner">
+            <svg viewBox="0 0 700 360" className="w-full h-auto select-none">
+              <defs>
+                {/* Gradient for trajectory arc */}
+                <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#14243e" />
+                  <stop offset="50%" stopColor="#c93f20" />
+                  <stop offset="100%" stopColor="#1b7a4d" />
+                </linearGradient>
 
-            <svg viewBox="0 0 520 230" className="w-full h-auto rounded-xl bg-gradient-to-b from-[#edf4fa] to-[#e4eef6] p-2" role="img" aria-label={`Route from ${city.label} to Kerala home`}>
-              {/* Water background lines */}
-              <path d="M0 160 Q 130 150 260 160 T 520 160" fill="none" stroke="#bdd6ea" strokeWidth="1" strokeDasharray="4 4" />
-              <path d="M0 190 Q 130 180 260 190 T 520 190" fill="none" stroke="#bdd6ea" strokeWidth="1" strokeDasharray="4 4" />
+                {/* Pulse animation filter */}
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
 
-              {/* Dotted straight reference line */}
-              <line x1="70" y1="100" x2="440" y2="120" stroke="#14243e" strokeOpacity="0.15" strokeWidth="2" strokeDasharray="6 6" />
+              {/* Water background texture ripples */}
+              <path d="M 0 120 Q 175 100 350 120 T 700 120" fill="none" stroke="#bfd8ec" strokeWidth="1" strokeDasharray="6 6" />
+              <path d="M 0 180 Q 175 160 350 180 T 700 180" fill="none" stroke="#bfd8ec" strokeWidth="1" strokeDasharray="6 6" />
+              <path d="M 0 240 Q 175 220 350 240 T 700 240" fill="none" stroke="#bfd8ec" strokeWidth="1" strokeDasharray="6 6" />
 
-              {/* Curved Trajectory Arc across Arabian Sea */}
-              <g data-testid="connection-line">
-                <path
-                  d="M 70 100 Q 255 40 440 120"
+              {/* Arabian Peninsula Landmass Outline (Stylized Vector) */}
+              <path
+                d="M 50 40 L 170 30 L 250 80 L 290 120 L 320 180 L 300 240 L 210 260 L 130 230 L 80 150 Z"
+                fill="#ece4d4"
+                stroke="#d3c7b2"
+                strokeWidth="1.5"
+              />
+              <text x="180" y="95" fill="#a89a84" fontSize="13" fontWeight="800" letterSpacing="3">ARABIAN GULF</text>
+
+              {/* Indian Subcontinent Landmass Outline (Stylized Vector) */}
+              <path
+                d="M 460 30 L 620 40 L 650 120 L 610 200 L 560 310 L 520 280 L 490 200 L 470 110 Z"
+                fill="#e4eedd"
+                stroke="#c9dbc0"
+                strokeWidth="1.5"
+              />
+              <text x="565" y="110" fill="#9db893" fontSize="13" fontWeight="800" letterSpacing="3">INDIA</text>
+
+              {/* Arabian Sea Label */}
+              <text x="380" y="270" fill="#96b7ce" fontSize="14" fontWeight="700" letterSpacing="2" textAnchor="middle">
+                ARABIAN SEA
+              </text>
+
+              {/* Dotted Straight Ground-Track */}
+              <line
+                x1={origin.x}
+                y1={origin.y}
+                x2={KERALA_COORD.x}
+                y2={KERALA_COORD.y}
+                stroke="#14243e"
+                strokeOpacity="0.15"
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+              />
+
+              {/* Curved Active Flight/Signal Arc */}
+              <path
+                d={arcPath}
+                fill="none"
+                stroke="url(#routeGradient)"
+                strokeWidth="3.5"
+                strokeDasharray="8 6"
+                className="animate-pulse"
+                filter="url(#glow)"
+              />
+
+              {/* Moving Pulse Packet along Arc */}
+              <circle r="5" fill="#ffc75f">
+                <animateMotion path={arcPath} dur="2.4s" repeatCount="indefinite" />
+              </circle>
+
+              {/* All GCC City markers */}
+              {GCC_CITIES.map((c) => {
+                const coord = CITY_COORDS[c.id];
+                if (!coord) return null;
+                const isSelected = c.id === currentCity.id;
+                return (
+                  <g key={c.id}>
+                    <circle
+                      cx={coord.x}
+                      cy={coord.y}
+                      r={isSelected ? 8 : 4}
+                      fill={isSelected ? "#c93f20" : "#14243e"}
+                      opacity={isSelected ? 1 : 0.4}
+                    />
+                    {isSelected && (
+                      <circle
+                        cx={coord.x}
+                        cy={coord.y}
+                        r="14"
+                        fill="none"
+                        stroke="#c93f20"
+                        strokeWidth="2"
+                        opacity="0.8"
+                        className="animate-ping"
+                      />
+                    )}
+                    <text
+                      x={coord.x}
+                      y={coord.y - 12}
+                      textAnchor="middle"
+                      fontSize={isSelected ? "11" : "9"}
+                      fontWeight={isSelected ? "800" : "600"}
+                      fill={isSelected ? "#14243e" : "#55647a"}
+                    >
+                      {c.label}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Kerala Destination Hub */}
+              <g>
+                <circle cx={KERALA_COORD.x} cy={KERALA_COORD.y} r="18" fill="#1b7a4d" fillOpacity="0.2" />
+                <circle cx={KERALA_COORD.x} cy={KERALA_COORD.y} r="10" fill="#1b7a4d" />
+                <circle cx={KERALA_COORD.x} cy={KERALA_COORD.y} r="4" fill="#ffd470" />
+                <circle
+                  cx={KERALA_COORD.x}
+                  cy={KERALA_COORD.y}
+                  r="22"
                   fill="none"
-                  stroke="#c93f20"
-                  strokeWidth="3.5"
-                  strokeOpacity={0.25 + opacity * 0.75}
-                  strokeDasharray="8 4"
-                  className="animate-pulse"
+                  stroke="#1b7a4d"
+                  strokeWidth="2"
+                  opacity="0.75"
+                  className="animate-ping"
                 />
+                <text x={KERALA_COORD.x + 16} y={KERALA_COORD.y - 6} fontSize="13" fontWeight="800" fill="#1b7a4d">
+                  Kerala Home 🌴
+                </text>
+                <text x={KERALA_COORD.x + 16} y={KERALA_COORD.y + 10} fontSize="10" fontWeight="600" fill="#14243e">
+                  Rover Standing By
+                </text>
               </g>
-
-              {/* GCC Origin Pin */}
-              <circle cx="70" cy="100" r="24" fill="#14243e" />
-              <circle cx="70" cy="100" r="18" fill="#1b2e4b" />
-              <text x="70" y="105" textAnchor="middle" fill="#faf4e8" fontSize="11" fontWeight="700">GCC</text>
-              <text x="70" y="145" textAnchor="middle" fontSize="13" fontWeight="700" fill="#14243e">{city.label}</text>
-              <text x="70" y="160" textAnchor="middle" fontSize="10" fill="#14243e" opacity="0.7">UAE / Gulf</text>
-
-              {/* Kerala Destination */}
-              <g style={{ opacity }}>
-                {/* Traditional Kerala home silhouette / lush green region */}
-                <path d="M 390 70 C 430 50, 480 70, 480 120 C 480 160, 440 170, 410 165 C 390 160, 380 120, 390 70 Z" fill="#1b7a4d" opacity="0.25" />
-                <rect x="410" y="100" width="60" height="40" rx="8" fill="#1b7a4d" />
-                <path d="M 405 100 L 440 75 L 475 100 Z" fill="#c93f20" />
-                {/* Small robot beacon */}
-                <circle cx="440" cy="115" r="7" fill="#ffc75f" />
-                <circle cx="440" cy="115" r="12" fill="none" stroke="#ffc75f" strokeWidth="2" opacity="0.8" className="animate-ping" />
-              </g>
-              <text x="440" y="165" textAnchor="middle" fontSize="13" fontWeight="700" fill="#14243e">Kerala Home</text>
-              <text x="440" y="180" textAnchor="middle" fontSize="10" fill="#1b7a4d" fontWeight="600">Amma & Achan</text>
             </svg>
 
-            <div className="mt-4 p-3 rounded-xl bg-cream border border-navy/10 text-xs md:text-sm font-medium text-navy/80" data-testid="connection-strength">
-              Connection strength: <strong className="text-navy">{100 - weakness}%</strong> {weakness > 66 ? "— direct contact feels weak, robot can be present instead." : weakness > 33 ? "— calls get harder, presence helps." : "— still close."}
+            {/* Live Telemetry Pill Overlay */}
+            <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-semibold text-navy shadow-md border border-navy/10 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span>Auto-cycling GCC routes: <strong className="text-coral-deep">{currentCity.label}</strong> active</span>
             </div>
           </div>
         </div>

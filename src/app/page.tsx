@@ -5,9 +5,7 @@ import TakeControl from "@/components/TakeControl";
 import UseCases from "@/components/UseCases";
 import StoryContrast from "@/components/StoryContrast";
 import PrivacyStates from "@/components/PrivacyStates";
-import MobilityLab from "@/components/MobilityLab";
 import MalayalamDemo from "@/components/MalayalamDemo";
-import OneMinuteDemo from "@/components/OneMinuteDemo";
 import HowItWorks, { FinalCTA } from "@/components/HowItWorks";
 import { CityProvider } from "@/components/CityContext";
 
@@ -18,10 +16,8 @@ export default function Home() {
       <DistanceJourney />
       <RobotReveal />
       <TakeControl />
-      <OneMinuteDemo />
       <UseCases />
       <StoryContrast />
-      <MobilityLab />
       <MalayalamDemo />
       <PrivacyStates />
       <HowItWorks />
