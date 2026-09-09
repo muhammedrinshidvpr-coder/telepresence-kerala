@@ -72,7 +72,7 @@ export const PILOT_CONFIG = {
   batchNumber: 1,
   totalUnits: 50,
   reservedUnits: 38,
-  depositAmount: "₹200 Pre-Order Token",
+  depositAmount: "₹199 Pre-Order Token",
   deliveryWindow: "Q2 Priority Batch",
   trialDays: 30,
   tagline: "Join Early Access and get exclusive priority boarding.",

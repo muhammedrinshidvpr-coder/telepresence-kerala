@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HousePlus, AppWindow, HeartHandshake, CheckCircle2, Shield, Sparkles, MapPin, CreditCard, Lock } from "lucide-react";
-import { COPY, GCC_CITIES, KERALA_DISTRICTS, PILOT_CONFIG } from "@/lib/copy";
+import { COPY, GCC_CITIES, KERALA_DISTRICTS, PILOT_CONFIG, TALLY_CONFIG } from "@/lib/copy";
 
 const STEPS = [
   {
@@ -152,7 +152,7 @@ export function FinalCTA() {
                   </p>
                 </div>
                 <div className="bg-coral/10 text-coral-deep font-bold text-xs px-3.5 py-1.5 rounded-full flex items-center gap-1.5 border border-coral/20">
-                  <span className="w-2 h-2 rounded-full bg-coral animate-pulse" /> ₹200/- Pre-Order Token
+                  <span className="w-2 h-2 rounded-full bg-coral animate-pulse" /> ₹199/- Pre-Order Token
                 </div>
               </div>
 
@@ -246,12 +246,28 @@ export function FinalCTA() {
 
                 <div className="sm:col-span-2 mt-2">
                   <button type="submit" className="btn-gold w-full text-base font-extrabold shadow-lg cursor-pointer">
-                    Proceed to Pre-Order Token Payment (₹200/-) →
+                    Proceed to Pre-Order Token Payment (₹199/-) →
                   </button>
                   <p className="text-[11px] text-center text-navy/85 mt-2 flex items-center justify-center gap-1.5">
                     <Lock size={12} className="text-kerala" />
-                    <span>Your nominal ₹200 token locks priority boarding and is 100% refundable upon request.</span>
+                    <span>Your nominal ₹199 token locks priority boarding and is 100% refundable upon request.</span>
                   </p>
+                </div>
+
+                <div className="sm:col-span-2 text-center pt-3 border-t border-navy/10">
+                  <span className="text-xs text-navy/70">Not ready to reserve yet? </span>
+                  <button
+                    type="button"
+                    data-testid="form-tally-consult"
+                    data-tally-open={TALLY_CONFIG.formId}
+                    data-tally-layout="modal"
+                    data-tally-width={TALLY_CONFIG.modalWidth}
+                    data-tally-emoji-text={TALLY_CONFIG.emoji}
+                    data-tally-hidden={`city=${encodeURIComponent(gccCity)},district=${encodeURIComponent(district)},name=${encodeURIComponent(name)},phone=${encodeURIComponent(phone)}`}
+                    className="text-xs font-bold text-coral-deep hover:underline cursor-pointer inline-flex items-center gap-1"
+                  >
+                    Book a free family consultation / demo →
+                  </button>
                 </div>
               </form>
             </div>
@@ -266,7 +282,7 @@ export function FinalCTA() {
                 Step 2: Pre-Order Token Payment
               </span>
               <h3 className="mt-3 text-2xl md:text-3xl font-extrabold text-navy">
-                Complete Your ₹200/- Token for {name}
+                Complete Your ₹199/- Token for {name}
               </h3>
               <p className="mt-2 text-sm text-navy/85 max-w-md mx-auto">
                 Connecting <strong className="text-navy">{gccCity}</strong> with family home in <strong className="text-navy">{district}</strong>.
@@ -303,6 +319,21 @@ export function FinalCTA() {
                   ← Edit details
                 </button>
               </div>
+
+              <div className="mt-4">
+                <button
+                  type="button"
+                  data-testid="payment-tally-inquire"
+                  data-tally-open={TALLY_CONFIG.formId}
+                  data-tally-layout="modal"
+                  data-tally-width={TALLY_CONFIG.modalWidth}
+                  data-tally-emoji-text={TALLY_CONFIG.emoji}
+                  data-tally-hidden={`city=${encodeURIComponent(gccCity)},district=${encodeURIComponent(district)},name=${encodeURIComponent(name)},phone=${encodeURIComponent(phone)}`}
+                  className="text-xs text-navy/70 hover:text-navy underline cursor-pointer"
+                >
+                  Have questions before paying? Ask our Kerala team via inquiry form →
+                </button>
+              </div>
             </div>
           )}
 
@@ -331,12 +362,24 @@ export function FinalCTA() {
                 </p>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <button
                   onClick={() => setStep("form")}
                   className="btn-outline text-xs py-2! px-4! cursor-pointer"
                 >
                   Register another family unit
+                </button>
+                <button
+                  type="button"
+                  data-testid="confirmed-tally-survey"
+                  data-tally-open={TALLY_CONFIG.formId}
+                  data-tally-layout="modal"
+                  data-tally-width={TALLY_CONFIG.modalWidth}
+                  data-tally-emoji-text={TALLY_CONFIG.emoji}
+                  data-tally-hidden={`city=${encodeURIComponent(gccCity)},district=${encodeURIComponent(district)},name=${encodeURIComponent(name)},phone=${encodeURIComponent(phone)}`}
+                  className="btn-coral text-xs py-2! px-4! shadow-md cursor-pointer"
+                >
+                  Complete home fit questionnaire (Tally) →
                 </button>
               </div>
             </div>
@@ -357,6 +400,23 @@ export function FinalCTA() {
               <span>100% refundable token</span>
             </div>
           </div>
+        </div>
+
+        {/* Secondary Tally Consultation Banner */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            data-testid="cta-tally-demo"
+            data-tally-open={TALLY_CONFIG.formId}
+            data-tally-layout="modal"
+            data-tally-width={TALLY_CONFIG.modalWidth}
+            data-tally-emoji-text={TALLY_CONFIG.emoji}
+            className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-cream text-sm font-semibold px-6 py-3 rounded-full transition-all backdrop-blur-sm cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <span>💬</span>
+            <span>Book a Family Demo / Home Assessment</span>
+            <span className="text-xs text-warm opacity-90">(Free • No Commitment)</span>
+          </button>
         </div>
 
         <p className="mt-8 text-center text-xs md:text-sm text-cream/90 text-balance">
