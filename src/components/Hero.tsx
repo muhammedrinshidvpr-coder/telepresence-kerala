@@ -47,12 +47,6 @@ export default function Hero() {
               Join Early Access
             </a>
           </div>
-
-          {/* User requirement 3: Join Early Access and get exclusive priority boarding */}
-          <div className="mt-7 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/15 backdrop-blur-md text-xs sm:text-sm font-semibold text-warm">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
-            <span>Join Early Access and get exclusive priority boarding</span>
-          </div>
         </div>
 
         {/* Narrative Split Cards */}

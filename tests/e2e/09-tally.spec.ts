@@ -12,12 +12,6 @@ test.describe("Tally form integration", () => {
     await page.goto("/#cta");
     await expect(page.getByTestId("cta")).toBeVisible();
 
-    // Secondary button below the card
-    const ctaTallyDemo = page.getByTestId("cta-tally-demo");
-    await expect(ctaTallyDemo).toBeVisible();
-    await expect(ctaTallyDemo).toHaveAttribute("data-tally-open", TALLY_CONFIG.formId);
-    await expect(ctaTallyDemo).toHaveAttribute("data-tally-layout", "modal");
-
     // In-card consultation link
     const inCardConsult = page.getByTestId("form-tally-consult");
     await expect(inCardConsult).toBeVisible();

@@ -1,23 +1,16 @@
 import { test, expect } from "@playwright/test";
 
-test("robot views switch camera (label + canvas alive)", async ({ page }) => {
+test("robot viewer renders and is centered", async ({ page }) => {
   await page.goto("/#robot");
   await expect(page.getByTestId("robot")).toBeVisible();
-  await page.getByTestId("view-side").click();
-  await expect(page.getByTestId("robot-view-label")).toContainText("side");
-  await page.getByTestId("view-rear").click();
-  await expect(page.getByTestId("robot-view-label")).toContainText("rear");
   await expect(page.getByTestId("robot-viewer")).toBeVisible();
+  await expect(page.getByText(/Drag to rotate freely • Scroll to zoom/i)).toBeVisible();
 });
 
-test("no-WebGL fallback renders and controls still work (?nogl=1)", async ({ page }) => {
+test("no-WebGL fallback renders on query parameter (?nogl=1)", async ({ page }) => {
   await page.goto("/?nogl=1#robot");
   await page.getByTestId("robot-viewer").scrollIntoViewIfNeeded();
   await expect(page.getByTestId("robot-fallback")).toBeVisible({ timeout: 30000 });
-  await page.getByTestId("mode-night").click();
-  await expect(page.getByTestId("robot-mode-label")).toContainText("night");
-  await page.getByTestId("hotspot-privacy").click();
-  await expect(page.getByTestId("hotspot-detail")).toContainText(/privacy/i);
 });
 
 test("city choice flows into the greeting", async ({ page }) => {

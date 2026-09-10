@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { HousePlus, AppWindow, HeartHandshake, CheckCircle2, Shield, Sparkles, MapPin, CreditCard, Lock } from "lucide-react";
+import { HousePlus, AppWindow, HeartHandshake, CheckCircle2, Sparkles, CreditCard, Lock } from "lucide-react";
 import { COPY, GCC_CITIES, KERALA_DISTRICTS, PILOT_CONFIG, TALLY_CONFIG } from "@/lib/copy";
 
 const STEPS = [
@@ -350,73 +350,21 @@ export function FinalCTA() {
                 Unit reserved for your Kerala family in <strong className="text-navy">{district}</strong> from <strong className="text-navy">{gccCity}</strong>.
               </p>
 
-              <div className="mt-6 p-4 rounded-2xl bg-cream border border-navy/10 text-xs text-navy/85 max-w-md mx-auto space-y-2 text-left">
-                <p className="flex items-center gap-2">
-                  <span className="text-kerala font-bold">✓</span> White-glove installation included across {district}.
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="text-kerala font-bold">✓</span> 30-day satisfaction guarantee once delivered.
-                </p>
+              <div className="mt-6 p-4 rounded-2xl bg-cream border border-navy/10 text-xs text-navy/85 max-w-md mx-auto text-left">
                 <p className="flex items-center gap-2">
                   <span className="text-kerala font-bold">✓</span> We will send priority updates and setup scheduling to {phone}.
                 </p>
-              </div>
-
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
-                <button
-                  onClick={() => setStep("form")}
-                  className="btn-outline text-xs py-2! px-4! cursor-pointer"
-                >
-                  Register another family unit
-                </button>
-                <button
-                  type="button"
-                  data-testid="confirmed-tally-survey"
-                  data-tally-open={TALLY_CONFIG.formId}
-                  data-tally-layout="modal"
-                  data-tally-width={TALLY_CONFIG.modalWidth}
-                  data-tally-emoji-text={TALLY_CONFIG.emoji}
-                  data-tally-hidden={`city=${encodeURIComponent(gccCity)},district=${encodeURIComponent(district)},name=${encodeURIComponent(name)},phone=${encodeURIComponent(phone)}`}
-                  className="btn-coral text-xs py-2! px-4! shadow-md cursor-pointer"
-                >
-                  Complete home fit questionnaire (Tally) →
-                </button>
               </div>
             </div>
           )}
 
           {/* Guarantees Strip */}
-          <div className="mt-8 pt-6 border-t border-navy/10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs text-navy/85">
-            <div className="flex items-center justify-center gap-2">
-              <MapPin size={16} className="text-kerala shrink-0" />
-              <span>White-glove Kerala setup</span>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <Shield size={16} className="text-kerala shrink-0" />
-              <span>30-day in-home satisfaction guarantee</span>
-            </div>
+          <div className="mt-8 pt-6 border-t border-navy/10 flex items-center justify-center text-center text-xs text-navy/85">
             <div className="flex items-center justify-center gap-2">
               <CheckCircle2 size={16} className="text-kerala shrink-0" />
               <span>100% refundable token</span>
             </div>
           </div>
-        </div>
-
-        {/* Secondary Tally Consultation Banner */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button
-            type="button"
-            data-testid="cta-tally-demo"
-            data-tally-open={TALLY_CONFIG.formId}
-            data-tally-layout="modal"
-            data-tally-width={TALLY_CONFIG.modalWidth}
-            data-tally-emoji-text={TALLY_CONFIG.emoji}
-            className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-cream text-sm font-semibold px-6 py-3 rounded-full transition-all backdrop-blur-sm cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <span>💬</span>
-            <span>Book a Family Demo / Home Assessment</span>
-            <span className="text-xs text-warm opacity-90">(Free • No Commitment)</span>
-          </button>
         </div>
 
         <p className="mt-8 text-center text-xs md:text-sm text-cream/90 text-balance">
