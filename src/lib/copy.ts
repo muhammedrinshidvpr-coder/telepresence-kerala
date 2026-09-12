@@ -70,12 +70,79 @@ export const KERALA_DISTRICTS = [
 
 export const PILOT_CONFIG = {
   batchNumber: 1,
-  totalUnits: 50,
-  reservedUnits: 38,
-  depositAmount: "₹199 Pre-Order Token",
-  deliveryWindow: "Q2 Priority Batch",
+  tagline: "Experience Be There Kerala in your parents' home with a free private demo.",
   trialDays: 30,
-  tagline: "Join Early Access and get exclusive priority boarding.",
+} as const;
+
+export const KERALA_STATS = [
+  {
+    stat: "16.5%",
+    label: "Senior citizens in Kerala",
+    sub: "India’s highest aging state, projected to reach ~23% by 2036.",
+    highlight: "Highest in India",
+  },
+  {
+    stat: "22+ Lakh",
+    label: "Malayalis working abroad",
+    sub: "Living in the UAE, Saudi, Qatar, Oman & Kuwait while parents stay back home.",
+    highlight: "The Gulf Diaspora",
+  },
+  {
+    stat: "1 in 5",
+    label: "Elderly homes live alone",
+    sub: "Navigating daily chores, medicines, and silent evenings in large ancestral houses.",
+    highlight: "Empty Nest Reality",
+  },
+  {
+    stat: "30%+",
+    label: "Seniors face a fall each year",
+    sub: "Most accidents happen unobserved when phones are left on chargers in other rooms.",
+    highlight: "Safety & Fall Risk",
+  },
+] as const;
+
+export const HEALTH_ALERTS = [
+  {
+    id: "wake-up",
+    icon: "Sunrise",
+    title: "Morning Wake-Up Check",
+    malayalam: "രാവിലെ ഉണർന്നോ എന്നറിയാം",
+    desc: "Know that parents are up, active, and having their morning tea without interrupting their peaceful routine with anxious early morning calls.",
+  },
+  {
+    id: "fall",
+    icon: "AlertTriangle",
+    title: "Floor-Level Fall Detection",
+    malayalam: "വീഴ്ചകൾ ഉടൻ അറിയാൻ",
+    desc: "Unlike wall cameras that miss blind spots, the rover sits near floor level to quickly notice if a parent has tripped and immediately alert your phone.",
+  },
+  {
+    id: "medicine",
+    icon: "Pill",
+    title: "Gentle Malayalam Pill Reminders",
+    malayalam: "“അമ്മേ, ഗുളിക കഴിക്കാൻ സമയമായി”",
+    desc: "No confusing digital alarms. The rover softly speaks familiar Malayalam prompts so parents never miss their blood pressure or diabetic medicines.",
+  },
+  {
+    id: "sos",
+    icon: "BellRing",
+    title: "One-Touch Emergency SOS",
+    malayalam: "ഒറ്റ ടച്ചിൽ മക്കളിലേക്ക്",
+    desc: "A single, clear button on the rover triggers an urgent call and live video link to your phone abroad, giving immediate help when they need it most.",
+  },
+] as const;
+
+export const FOUNDER_INFO = {
+  name: "Muhammed Rinshid V P",
+  role: "Founder & AI Engineer",
+  tagline: "AI Automation Engineer & Full-Stack Developer",
+  quote:
+    "Being from Kerala, I’ve seen firsthand how Gulf families live with constant knot-in-the-stomach anxiety when evening calls go unanswered. I'm building Be There Kerala so you don't just call home—you can physically be there, check on their health, and give them the comforting presence they deserve.",
+  image: "/founder.jpg",
+  portfolio: "https://muhammedrinshidvpr-coder.github.io/rinshid-portfolio/",
+  linkedin: "https://linkedin.com/in/rinshidrazaq",
+  github: "https://github.com/muhammedrinshidvpr-coder",
+  email: "muhammedrinshidvpr@gmail.com",
 } as const;
 
 export const TALLY_CONFIG = {

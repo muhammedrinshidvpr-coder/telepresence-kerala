@@ -1,3 +1,5 @@
+import { FOUNDER_INFO } from "@/lib/copy";
+
 export default function Footer() {
   return (
     <footer data-testid="footer" className="bg-[#080e18] text-cream border-t border-white/10">
@@ -5,29 +7,30 @@ export default function Footer() {
         <div>
           <p className="font-extrabold text-xl tracking-tight">Be There Kerala</p>
           <p className="text-xs md:text-sm text-cream/80 mt-2.5 leading-relaxed">
-            A dignified family telepresence rover designed for the Kerala diaspora across the GCC. Full peer-to-peer WebRTC privacy with zero intrusion.
+            A dignified family telepresence companion designed for the Kerala diaspora across the GCC. Full peer-to-peer WebRTC privacy with zero intrusion.
           </p>
           <p className="text-xs text-warm/90 mt-3 font-semibold">
-            Kerala Early Access Batch 1: Limited to 50 families.
+            Founded by <a href={FOUNDER_INFO.portfolio} target="_blank" rel="noopener noreferrer" className="underline hover:text-warm">{FOUNDER_INFO.name}</a>
           </p>
         </div>
         <nav aria-label="Footer" className="text-xs md:text-sm">
           <p className="font-bold text-cream mb-3 uppercase tracking-wider text-xs">Quick Links</p>
           <ul className="space-y-2 text-cream/80">
-            <li><a href="#robot" className="hover:text-warm transition-colors">3D Rover Model & Specs</a></li>
-            <li><a href="#control" className="hover:text-warm transition-colors">App & Rover Showcase Video</a></li>
-            <li><a href="#privacy" className="hover:text-warm transition-colors">WebRTC Direct Privacy</a></li>
+            <li><a href="#problem" className="hover:text-warm transition-colors">The Reality & Stats</a></li>
+            <li><a href="#robot" className="hover:text-warm transition-colors">The Rover Hardware</a></li>
+            <li><a href="#health" className="hover:text-warm transition-colors">Health & Safety Alerts</a></li>
+            <li><a href="#founder" className="hover:text-warm transition-colors">Meet the Founder</a></li>
             <li>
               <a href="#cta" className="hover:text-warm transition-colors cursor-pointer text-coral font-semibold">
-                Join Early Access & Pre-Order Token →
+                Request a Free Family Demo →
               </a>
             </li>
           </ul>
         </nav>
         <div className="text-xs md:text-sm text-cream/80 space-y-2">
           <p className="font-bold text-cream mb-1 uppercase tracking-wider text-xs">Privacy & Standards</p>
-          <p>Complete WebRTC peer-to-peer privacy, zero recording, zero intrusion.</p>
-          <p className="text-warm/90 font-medium">Malayalam-first • Elder-respectful • 100% Refundable Token</p>
+          <p>Complete WebRTC peer-to-peer privacy, zero recording, zero cloud eavesdropping.</p>
+          <p className="text-warm/90 font-medium">Malayalam-first • Elder-respectful • Safe for Kerala Homes</p>
           <p className="text-xs text-cream/80 pt-2">© {new Date().getFullYear()} Be There Kerala. All rights reserved.</p>
         </div>
       </div>

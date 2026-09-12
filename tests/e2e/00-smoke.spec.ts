@@ -7,7 +7,7 @@ test("smoke: nav, hero, all active blocks render", async ({ page }) => {
   await expect(page.getByTestId("hero")).toBeVisible();
   await expect(page.getByRole("heading", { name: /A call can be missed/i })).toBeVisible();
   await expect(page.getByTestId("btn-how-it-works")).toBeVisible();
-  for (const id of ["distance", "robot", "control", "usecases", "story", "malayalam", "privacy", "how", "cta", "footer"]) {
+  for (const id of ["problem-stats", "distance", "robot", "health-alerts", "control", "usecases", "story", "malayalam", "privacy", "how", "founder-section", "cta", "footer"]) {
     await expect(page.getByTestId(id)).toBeVisible();
   }
 });

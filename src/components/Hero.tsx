@@ -44,7 +44,7 @@ export default function Hero() {
               <Compass size={18} aria-hidden className="mr-2 inline" /> See the Rover in Action →
             </a>
             <a href="#cta" className="btn-coral text-sm font-bold shadow-md cursor-pointer">
-              Join Early Access
+              Request a Free Demo
             </a>
           </div>
         </div>

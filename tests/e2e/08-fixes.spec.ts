@@ -19,13 +19,14 @@ test("city choice flows into the greeting", async ({ page }) => {
   await expect(page.getByTestId("malayalam-greeting")).toContainText("മസ്കറ്റിൽ");
 });
 
-test("pre-order token form captures expectations and displays Razorpay step", async ({ page }) => {
+test("demo request form captures expectations and displays confirmation with WhatsApp contact", async ({ page }) => {
   await page.goto("/#cta");
   await expect(page.getByTestId("cta")).toBeVisible();
   await page.locator("#reserve-name").fill("Arun Varma");
   await page.locator("#reserve-phone").fill("+971 50 987 6543");
   await page.locator("#reserve-expectations").fill("Checking in with Amma during evening tea time and moving around the veranda.");
-  await page.getByRole("button", { name: /Proceed to Pre-Order Token Payment/i }).click();
-  await expect(page.getByText(/Step 2: Pre-Order Token Payment/i)).toBeVisible();
-  await expect(page.getByText(/Official Razorpay Pre-Order Token/i)).toBeVisible();
+  await page.getByRole("button", { name: /Request a Free Private Demo/i }).click();
+  await expect(page.getByText(/Demo Request Confirmed/i)).toBeVisible();
+  await expect(page.getByText(/Chat directly with Founder on WhatsApp/i)).toBeVisible();
 });
+

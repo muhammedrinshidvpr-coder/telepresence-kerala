@@ -19,13 +19,21 @@ export default function Navbar() {
           </span>
           <span>Be There <span className="text-xs font-semibold text-coral-deep bg-coral/10 px-2 py-0.5 rounded-full ml-1">Kerala</span></span>
         </Link>
+        
+        <div className="hidden md:flex items-center gap-6 text-xs font-bold text-navy/80">
+          <a href="#problem" className="hover:text-coral transition-colors">The Reality</a>
+          <a href="#robot" className="hover:text-coral transition-colors">The Rover</a>
+          <a href="#health" className="hover:text-coral transition-colors">Health & Safety</a>
+          <a href="#founder" className="hover:text-coral transition-colors">Founder</a>
+        </div>
+
         <div className="flex items-center gap-4">
           <a
             href="#cta"
             data-testid="nav-cta"
             className="btn-coral py-2! px-5! text-xs font-bold shadow-sm cursor-pointer hover:shadow-md transition-all active:scale-95"
           >
-            Join Early Access →
+            Request Demo →
           </a>
         </div>
       </nav>
