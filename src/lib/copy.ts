@@ -33,10 +33,10 @@ export const MALAYALAM_PHRASES = [
 ] as const;
 
 export const ROBOT_HOTSPOTS = [
-  { id: "camera", label: "Enlarged Camera", title: "High-Definition Optical Lens", text: "Enlarged wide-angle camera lens positioned at optimal eye level for natural face-to-face interaction." },
-  { id: "screen", label: "Bigger Display", title: "Expansive Companion Display", text: "Large landscape display showing your warm smile clearly to parents across the room." },
-  { id: "tires", label: "Chunky All-Terrain Tires", title: "Heavy-Tread Rugged Wheels", text: "4 deep-tread rubber tires engineered to transition smoothly across Kerala tile joints, rugs, and door sills." },
-  { id: "chassis", label: "Low-Profile Chassis", title: "Stable Navy Rover Body", text: "Heavy, low center of gravity base (20cm riser height) preventing any tipping on household transitions." },
+  { id: "eve-unit", label: "EVE Companion Unit", title: "Expressive Robotic Companion", text: "Sculpted pearlescent aerodynamic torso with glowing cyan expressive eyes, lifelike articulation, and floating side arms." },
+  { id: "turntable", label: "Halo Turntable", title: "Motorized Swivel Collar", text: "Precision 360-degree rotating base with an illuminated cyan halo ring connecting the EVE unit to the rover deck." },
+  { id: "tires", label: "Chevron Tractor Tires", title: "Deep V-Tread All-Terrain Wheels", text: "4 rugged all-terrain chevron tractor tires engineered to conquer Kerala tile transitions, verandah sills, and floor rugs." },
+  { id: "chassis", label: "EVE Rover Chassis", title: "Heavy-Duty Powder-Coated Base", text: "Robust ~700mm x 600mm low-center-of-gravity industrial base with front beveled plate, badge, and glowing LED lightbar." },
   { id: "privacy", label: "WebRTC Privacy", title: "Peer-to-Peer Encrypted", text: "Complete privacy and zero intrusion into the system — direct peer connection with active LED indicator." },
   { id: "charging", label: "Auto Docking", title: "Magnetic Charging Base", text: "Returns automatically to the magnetic floor dock when not in use." },
 ] as const;

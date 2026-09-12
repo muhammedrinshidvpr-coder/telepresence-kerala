@@ -43,10 +43,10 @@ export default function RobotReveal() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto">
           <p className="text-xs font-bold uppercase tracking-widest text-coral-deep bg-coral/10 inline-block px-3.5 py-1.5 rounded-full">
-            Realistic 3D Inspection
+            EVE Rover 3D Inspection
           </p>
           <h2 id="robot-h" className="mt-3 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance text-navy">
-            Engineered for Stability and Presence
+            EVE Rover: Explore • Assist • Together
           </h2>
         </div>
 
@@ -75,7 +75,7 @@ export default function RobotReveal() {
                 )}
                 {/* Overlay Badge */}
                 <div className="absolute top-3 right-3 bg-navy-deep/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[11px] font-semibold text-warm shadow-md border border-white/10 pointer-events-none">
-                  ✨ Auto-Rotating 3D Model • Touch to Inspect
+                  ✨ Auto-Rotating EVE Rover • Touch to Inspect
                 </div>
               </div>
             ) : (
